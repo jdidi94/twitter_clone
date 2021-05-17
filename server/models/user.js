@@ -7,6 +7,10 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
+    saved: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
+    }],
         
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -19,6 +23,7 @@ const UserSchema = new mongoose.Schema({
     email: String,
     password: String,
     photo: String,
+    cover:String
  
 });
 

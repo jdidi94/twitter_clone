@@ -12,7 +12,7 @@ exports.hello=async function  (req, res){
 exports.signUp= async function (req, res)  {
     // console.log("hello")
       try {
-     console.log(req.body)
+   
       const salt = bcrypt.genSaltSync(saltRounds);
       const hash = bcrypt.hashSync(req.body.password, salt);
       const token = jwt.sign({ email: req.body.email }, config.secret, {
@@ -69,18 +69,24 @@ exports.getUser= async function  (req, res)  {
 
     try {
       const token = req.headers.authorization.split(" ")[1];
-      const email = jwt.verify(token, config.secret);
-      const user = await User.findOne(
-        { email: email.email }
-      );
-      res.send({ user: user});
+      const email = await jwt.verify(token, config.secret);
+      console.log(email)
+      if(email){
+
+        const user = await User.findOne(
+          { email: email.email }
+        );
+        res.send(user);
+      }else{
+        res.send("user not found")
+      }
     } catch (err) {
       res.send(err);
     }
  
 }
 exports.useredit = async function  (req, res)  {
-
+  console.log(req.body)
   try{
      if(req.body.password!==""){
       const salt = bcrypt.genSaltSync(saltRounds);
@@ -93,6 +99,7 @@ exports.useredit = async function  (req, res)  {
           email: req.body.email,
           password:hash, 
           photo:req.body.photo,
+     
          }})
         res.send({message:"the password updated with data"})
      }
@@ -104,6 +111,7 @@ exports.useredit = async function  (req, res)  {
           phone:req.body.phone,
           email: req.body.email,
           photo:req.body.photo,
+
         }}) 
         res.send({ user:"updated"})
      }
