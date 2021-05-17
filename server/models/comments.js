@@ -1,13 +1,19 @@
 const mongoose = require("mongoose");
 
 var CommentSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
+      userPhoto:{
+          type:String
+      },
+      userName:{
+         type:String
+      },
     post: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
     likes: {
         type: Number
@@ -15,7 +21,10 @@ var CommentSchema = new mongoose.Schema({
      comment: {
         type: String
     },
-    photo: String,
+    photoComment:{
+        type: String
+        
+    }
 
  
 }, { timestamps: true });

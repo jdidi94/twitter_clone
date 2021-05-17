@@ -8,6 +8,7 @@ const  postSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+
     
        
     post: {
@@ -22,9 +23,15 @@ const  postSchema = new mongoose.Schema({
     type:Boolean,
     default:false,
     },
-    likes:Number,
-    retweets:Number,
-    saved: Number,
+    likes:{
+        type:Number,
+    },
+    retweets:{
+        type:Number,
+    },
+    saved:{
+        type:Number,
+    },
     date: {
         type: Date, default:Date.now
     },
@@ -33,3 +40,7 @@ const  postSchema = new mongoose.Schema({
 },{ timestamps: true });
 const Post = mongoose.model('Post', postSchema);
 module.exports = Post;
+// comments: [{
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: 'Comments'
+// }],
