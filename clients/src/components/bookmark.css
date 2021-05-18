@@ -1,0 +1,6 @@
+.Bookmark_container {
+  display: flex;
+
+  gap: 40px;
+  padding: 5% 0% 10% 15%;
+}

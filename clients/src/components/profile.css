@@ -1,0 +1,77 @@
+.profile_container {
+  margin: 0;
+  padding: 0;
+}
+
+.all_info {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+
+  width: 100%;
+
+  margin: 0;
+}
+
+.info_group {
+  height: 200px;
+  width: 100%;
+  grid-column-start: 2;
+  grid-column-end: 6;
+  border-radius:10px;
+  display:flex;
+  padding:30px 30px;
+  gap:40px
+
+}
+.paragraph_div{
+    padding-top:40px ;
+    width: 100%;
+}
+.photosize {
+  width: 100%;
+  max-height: 600px;
+  border-radius:10px;
+  grid-column-start: 1;
+  grid-column-end: 7;
+}
+.user_info{
+    display:flex;
+    gap:5px;
+}
+.profle_tof{
+    width:100%;
+   
+}
+.photo_user{
+    width:100px;
+    height: 100px;
+    z-index: 1;
+    border:white solid 1px;
+    border-radius:5px;
+}
+
+.Bookmark_container {
+    display: grid;
+  
+    grid-template-areas:
+      "filter_container post_container post_container"
+      "filter_container post_container post_container";
+
+    gap: 40px;
+    padding: 5% 0% 10% 15%;
+  }
+.filter_container {
+    grid-area: filter_container;
+    height: 200px;
+    border-radius: 10px;
+    padding-top: 20px;
+    justify-content: center;
+  }
+  .post_profile_container {
+    grid-area: post_container;
+    border-radius: 10px;
+    padding: 30px 30px;
+    max-width: 650px;
+    height:auto;
+  
+  }

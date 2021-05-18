@@ -1,0 +1,176 @@
+.back_btn {
+    margin-bottom: 5px;
+    color: rgb(0, 132, 255);
+  }
+  .arrow {
+    border: solid rgb(0, 132, 255);
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+  }
+  .left {
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+  }
+  .para_small {
+    color: grey;
+  }
+  .submit {
+    color: white;
+    margin: 10px 50px;
+    border: 1px solid grey;
+    text-align: center;
+    border-radius: 10px;
+    padding: 10px 10px;
+    background-color: rgb(0, 132, 255);
+  }
+  .text_div {
+    margin: 7px 50px;
+  }
+  .paragraph_input {
+    margin: 0;
+  }
+  .edit {
+    margin-left: 50px;
+    margin-top: 5px;
+  }
+  .div_inputs {
+    border: 1px solid grey;
+    width: 700px;
+    height: 850px;
+    margin: 0;
+    border-radius: 10px;
+  }
+  .form {
+    margin-top: 10px;
+  }
+  .input {
+    border: 1px solid grey;
+    border-radius: 5px;
+    width: 500px;
+    padding: 10px;
+    height: 50px;
+  }
+  .contain_edit {
+    margin-top: 5%;
+    margin-left: 25%;
+    border-radius: 20px;
+  }
+  .button_edit {
+    padding-left: 50px;
+  }
+  .contain {
+    width: auto;
+    margin: auto;
+  }
+  .container {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    min-width: 500px;
+    max-height: 600px;
+    font-family: "Poppins", sans-serif;
+  }
+  .photo_div {
+    height: 70px;
+  }
+  .personal_info {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  .profile_tr {
+    height: 80px;
+  }
+  .profile {
+    padding-left: 10px;
+    font-size: 30px;
+    font-weight: 500;
+  }
+  .button_edit {
+    float: left;
+    padding-left: 50px;
+  }
+  .profile_btn {
+    float: right;
+    margin-right: 30px;
+    border: 1px solid grey;
+    text-align: center;
+    border-radius: 10px;
+    padding: 10px 10px;
+  }
+  .photo_profile {
+    padding-left: 10px;
+    color: grey;
+  }
+  .col_tr {
+    height: 50px;
+  }
+  .text_title {
+    padding-left: 10px;
+    color: grey;
+  }
+  .text {
+    padding-left: 50px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  table tr {
+    border: 0.5px solid #ccc;
+    border-collapse: collapse;
+    min-width: 500px;
+    table-layout: fixed;
+  }
+  .photo_profile {
+    width: 50px;
+    height: 50px;
+    margin-top: 10px;
+    border-radius: 5px;
+  }
+  table {
+    border-radius: 20px;
+  }
+
+  .profile-div {
+    margin: 20px 50px;
+    max-width: 200px;
+    position: relative;
+    border-radius: 50%;
+  }
+  .profile-div:hover .overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .profile-div:hover .overlay .para-pic {
+    display: block;
+  }
+  .profile-div .img-div {
+    display: block;
+    width: 100%;
+    border-radius: 50%;
+    height: auto;
+  }
+  .profile-div .overlay {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    overflow: hidden;
+    height: 100%;
+    border-radius: 50%;
+  }
+  .profile-div .overlay input {
+    width: 100%;
+    position: absolute;
+    opacity: 0;
+    bottom: 20px;
+    z-index: 2;
+    cursor: pointer;
+  }
+  .profile-div .overlay .para-pic {
+    position: absolute;
+    bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    width: 100%;
+    display: none;
+  }
