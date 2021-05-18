@@ -27,8 +27,10 @@ exports.getAllPosts = async function (req, res) {
   }
 };
 exports.updateComment= async function  (req, res)  {
+  console.log(req.body)
   try{
-    const comment =await Post.updateOne({_id: req.params.id},{$set:{
+    
+    const comment =await Post.updateOne({_id: req.params.id},{$push:{
       comments:req.body.comments }})
       res.send("updated post with commment")
   }catch(err){
