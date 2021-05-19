@@ -28,6 +28,6 @@ app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
 app.use("/api/comment", commentRoutes);
 
-app.listen(3001, function () {
-  console.log("listening on port 3000!");
+app.listen(4000, function () {
+  console.log("listening on port 4000!");
 });

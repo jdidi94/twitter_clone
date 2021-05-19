@@ -23,6 +23,7 @@
   grid-area: new_tweets;
   width: 100%;
   max-width: 650px;
+  max-height: 300px;
   border-radius: 10px;
   padding: 30px 30px;
 }
@@ -108,14 +109,12 @@
   border: none;
   color: #1e90ff;
 }
-
-.dropdown-menu .dropdown-menu-right {
+.btn_tof{
+  width:30px;
+  height: 30px;
 }
 
-.Whocanreply {
-}
-.canseeyou {
-}
+
 
 /* post */
 .tof_post {
@@ -169,21 +168,44 @@
   font-weight: 700;
   border: none;
 }
+.btn_likes{
+  color:pink;
+  background: white;
+  font-weight: 700;
+  border: none;
+}
+.btn_saved{
+  color:rgb(192, 209, 255);
+  background: white;
+  font-weight: 700;
+  border: none;
+}
+.btn_tweet{
+  color:green;
+  background: white;
+  font-weight: 700;
+  border: none;
+}
 .btn_button:hover {
   background-image: linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%); 
 }
 .comment_div {
   display: flex;
   padding-top: 30px;
+  align-items: center;
+  justify-content: center;
+  gap:2px
 }
 .tof_comment {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 10px;
+  margin:0;
+  padding:0
 }
 .text_comment {
   width: 100%;
-  height: 39px;
+  height: 50px;
   border: none;
 
   font-size: 15px;
@@ -293,17 +315,22 @@ line-height:1.2;
 }
 /* input file */
 
-.image-upload > #file-input
+/* .image-upload > #file-input
 {
     display: none;
-}
+} */
 
 .image-upload .fa-image
 {
     width: 80px;
     cursor: pointer;
+   
+  
+
+
 }
 .tarea{
+  display:flex;
   margin:0;
-  width:100%
+  width:100%;
 }

@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import "./home.css";
 import axios from "axios";
+import ReactDOM from "react-dom";
 // import moment from "moment";
 function Home() {
   const [post, createPost] = useState("");
@@ -9,14 +10,20 @@ function Home() {
   const [user, setUser] = useState({});
   const [getPosts, setPosts] = useState([]);
   const [comment, createComment] = useState("");
-  const [currentComment, setCurrent] = useState("");
+  const [submit, setSubmit] = useState("");
+  const [likes, setLikes] = useState("");
+  const [colorLikes, setColorLikes] = useState(true);
+  const [tweets, setTweets] = useState("");
+  const [colorTweets, setColorTweets] = useState(true);
+  const [saved, setSaved] = useState("");
+  const [colorSaved, setColorSaved] = useState(true);
 
   // const [pub,setPublic]=useState(false)
   const getUser = () => {
     const token = localStorage.getItem("token");
     const headers = { headers: { Authorization: `Bearer ${token}` } };
     axios
-      .get("http://localhost:3001/api/user/", headers)
+      .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
         // console.log("USERBEFORE", this.user);
         console.log("here", data);
@@ -27,7 +34,7 @@ function Home() {
       });
   };
   const getAllPosts = () => {
-    axios.get("http://localhost:3001/api/post/").then(({ data }) => {
+    axios.get("http://localhost:4000/api/post/").then(({ data }) => {
       console.log("here all post", data);
       setPosts(data);
     });
@@ -35,8 +42,9 @@ function Home() {
   useEffect(() => {
     getUser();
     getAllPosts();
-  }, []);
+  }, [submit]);
   const uploadImage = (event) => {
+    console.log("hii");
     event.preventDefault();
     const image = new FormData();
     image.append("file", event.target.files[0]);
@@ -73,7 +81,7 @@ function Home() {
       comment: comment,
     };
     axios
-      .post("http://localhost:3001/api/comment/", data)
+      .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
         console.log("this is the comment id ", data);
         // setCurrent(data._id)
@@ -83,7 +91,7 @@ function Home() {
         console.log(comments);
 
         axios
-          .patch(`http://localhost:3001/api/post/${id}`, { comments: comments })
+          .patch(`http://localhost:4000/api/post/${id}`, { comments: comments })
           .then((data) => {
             console.log(data);
           });
@@ -106,13 +114,135 @@ function Home() {
       public: kane,
     };
 
-    axios.post("http://localhost:3001/api/post/", data).then((res) => {
-      console.log("your data is posted", res);
-    });
+    axios
+      .post("http://localhost:4000/api/post/", data)
+      .then((res) => {
+        console.log("your data is posted", res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
+  const handleLikesClick = (id, like, e) => {
+    e.preventDefault();
+
+    console.log("here like", like);
+    setSubmit(!submit);
+    if (!like.includes(user._id)) {
+      const element = document.getElementById(id + "like");
+      ReactDOM.findDOMNode(element).style.color = "red";
+
+      const data = {
+        message: true,
+        likes: user._id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/post/likes/${id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+          console.log("colors", colorLikes);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (like.includes(user._id)) {
+      const element = document.getElementById(id + "like");
+      ReactDOM.findDOMNode(element).style.color = "black";
+
+      const data = {
+        message: false,
+        likes: user._id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/post/likes/${id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+          console.log("colors", colorLikes);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+  const handleTweetsClick = (id, retweets, e) => {
+    e.preventDefault();
+
+    const element = document.getElementById(id + "retweet");
+    ReactDOM.findDOMNode(element).style.color = "green";
+    console.log("here like", retweets);
+    setSubmit(!submit);
+    if (!retweets.includes(user._id)) {
+      const data = {
+        message: true,
+        retweets: user._id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (retweets.includes(user._id)) {
+      const element = document.getElementById(id + "retweet");
+      ReactDOM.findDOMNode(element).style.color = "black";
+      const data = {
+        message: false,
+        retweets: user._id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+          console.log("colors", colorTweets);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+  const handleTClickSaved = (id, save, e) => {
+    e.preventDefault();
+
+    let element = document.getElementById(id + "save");
+    ReactDOM.findDOMNode(element).style.color = "blue";
+
+    setSubmit(!submit);
+    if (!save.includes(user._id)) {
+      const data = {
+        message: true,
+        saved: user._id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/post/saved/${id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (save.includes(user._id)) {
+      let element = document.getElementById(id + "save");
+      ReactDOM.findDOMNode(element).style.color = "black";
+      const data = {
+        message: false,
+        saved: user._id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/post/saved/${id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   // home post mapping
-  const onePost = getPosts.map((element, i) => (
-    <div key={i} style={{ background: "white" }} className="one_post">
+  const onePost = getPosts.map((element) => (
+    <div key={element._id} style={{ background: "white" }} className="one_post">
       <div className="info">
         <img className="tof_post" src={element.user.photo} />
         <div>
@@ -126,21 +256,39 @@ function Home() {
       </div>
       <div className="numbers">
         <p className="post_date">{element.comments.length} comments</p>
-        <p className="post_date">{element.retweets} retweets</p>
-        <p className="post_date">{element.saved} saved</p>
+        <p className="post_date">{element.retweets.length} retweets</p>
+        <p className="post_date">{element.saved.length} saved</p>
       </div>
 
       <div className="btn_control">
         <button className="btn_button">
           <i className="fab fa-rocketchat"></i> comment
         </button>
-        <button className="btn_button">
+        <button
+          className="btn_button"
+          onClick={(e) => {
+            handleTweetsClick(element._id, element.retweets, e);
+          }}
+          id={element._id + "retweet"}
+        >
           <i className="fa fa-retweet"></i> Retweet
         </button>
-        <button className="btn_button">
+        <button
+          onClick={(e) => {
+            handleLikesClick(element._id, element.likes, e);
+          }}
+          id={element._id + "like"}
+          className="btn_button"
+        >
           <i className="far fa-heart"></i> Like
         </button>
-        <button className="btn_button">
+        <button
+          className="btn_button"
+          onClick={(e) => {
+            handleTClickSaved(element._id, element.saved, e);
+          }}
+          id={element._id + "save"}
+        >
           <i className="far fa-bookmark"></i> Save{" "}
         </button>
       </div>
@@ -150,19 +298,22 @@ function Home() {
           src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
         />
         <div className="tarea">
-          <div className="image-upload">
-            <label htmlFor="file-input">
-            <i className='far fa-image' style={{fontSize:'36px', color:"grey"}}></i>
-            </label>
-
-            <input id="file-input" type="file" />
-          </div>
           <textarea
             className="text_comment"
             placeholder="write a comment"
             name={element._id}
             onChange={handleCommentChange}
           ></textarea>
+          <div className="image-upload">
+            <label htmlFor="file-input">
+              <i
+                className="far fa-image"
+                style={{ fontSize: "40px", color: "grey" }}
+              ></i>
+            </label>
+
+            <input id="file-input" type="file" />
+          </div>
         </div>
 
         <button
@@ -271,7 +422,10 @@ function Home() {
         <div className="button_newtweets">
           <div className="image-upload">
             <label htmlFor="file-input">
-            <i className='far fa-image' style={{fontSize:'36px', color:"blue"}}></i>
+              <i
+                className="far fa-image"
+                style={{ fontSize: "40px", color: "#1e90ff" }}
+              ></i>
             </label>
 
             <input

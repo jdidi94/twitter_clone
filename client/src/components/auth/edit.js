@@ -21,7 +21,7 @@ function EditUser() {
     const token = localStorage.getItem("token");
     const headers = { headers: { Authorization: `Bearer ${token}` } };
     axios
-      .get("http://localhost:3001/api/user/", headers)
+      .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
         // console.log("USERBEFORE", this.user);
         console.log("here", data);
@@ -85,7 +85,7 @@ function EditUser() {
       swal("Oops!", "Password does not match!", "error");
     } else {
       axios
-        .patch(`http://localhost:3001/api/user/${user._id}`, data)
+        .patch(`http://localhost:4000/api/user/${user._id}`, data)
         .then(({ data }) => {
           swal("Welcome", "success");
           console.log("the user changed",data)

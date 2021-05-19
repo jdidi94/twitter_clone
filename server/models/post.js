@@ -26,17 +26,22 @@ comments: [{
     type:Boolean,
     default:false,
     },
-    likes:{
-        type:Number,
-    },
-    retweets:{
-        type:Number,
-    },
-    saved:{
-        type:Number,
-    },
+    likes:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+       
+    retweets:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    saved:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     date: {
         type: Date, default:Date.now
+
     },
 
 

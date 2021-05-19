@@ -32,7 +32,7 @@ function Login(props) {
       swal("Oops!", "You need to fill in all the empty fields!", "error");
     } else {
       axios
-        .post("http://localhost:3001/api/user/login", loginInput)
+        .post("http://localhost:4000/api/user/login", loginInput)
         .then(( res ) => {
           console.log("ressss",res)
           if (res.data.message === "wrong password") {
@@ -74,7 +74,7 @@ function Login(props) {
       swal("Oops!", "Password does not match!", "error");
     } else {
       axios
-        .post("http://localhost:3001/api/user/signup", registerInput)
+        .post("http://localhost:4000/api/user/signup", registerInput)
         .then(( res ) => {
           console.log("hre the register", res.data.token)
            const token = res.data.token;
