@@ -1,7 +1,84 @@
-import React from "react";
+import { React, useState, useEffect } from "react";
 import "./profile.css";
+import axios from "axios";
+import ReactDOM from "react-dom";
 
-function Profile() {
+function Profile(props) {
+  const { state } = props.location;
+  const [user, setUser] = useState({});
+  
+  const [followers, setfollowers] = useState("");
+  const [following, setfollowing] = useState("");
+  const [load, setload] = useState(false);
+  
+  const getUser = () => {
+    console.log("this user state", state);
+    axios
+      .get(`http://localhost:4000/api/user/getUser/${state.id}`)
+      .then(({ data }) => {
+        // console.log("USERBEFORE", this.user);
+        console.log("profile user", data);
+
+        setUser(data);
+        setfollowers(data.followers.length);
+        console.log("")
+        setfollowing(data.following.length);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    getUser();
+  }, [load]);
+  const handleTClickFollowing = (e) => {
+    e.preventDefault();
+
+    // let element = document.getElementById(id + "save");
+    // ReactDOM.findDOMNode(element).style.color = "blue";
+
+  
+    if (!user.following.includes(state.user._id)) {
+      const data = {
+        message: true,
+        following: state.user._id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/user/following/${state.id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+          setload(!load);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (user.following.includes(user._id)) {
+      // let element = document.getElementById(id + "save");
+      // ReactDOM.findDOMNode(element).style.color = "black";
+      const data = {
+        message: false,
+        following: state.user._id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/user/following/${state.id}`, data)
+        .then(({ data }) => {
+          setload(!load);
+
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+  const pushUserClick = (id) => {
+    props.history.push({
+      pathname: `/profile/${id}`,
+      state: { id: id, user: user }, // your data array of objects
+    });
+  };
+
   return (
     <div className="profile_container">
       <div className="all_info">
@@ -13,32 +90,26 @@ function Profile() {
         </div>
         {/* group info */}
         <div className="info_group" style={{ background: "white" }}>
-        <div className="image_div">
-        <img
-                className="photo_user"
-                src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
-              />
+          <div className="image_div">
+            <img
+              className="photo_user"
+            src={user.photo}
+            />
           </div>
 
           <div>
-
             <div className="user_info">
-              <h5 className="name_info">jdidi daoud</h5>
-              <p className="follow_numbers">245k followers</p>
-              <p className="follow_numbers">245k following</p>
-              <button className="follow_button">
+              <h5 className="name_info">{user.name}</h5>
+              <p className="follow_numbers">{followers} followers</p>
+              <p className="follow_numbers">{following} following</p>
+              <button className="follow_button" onClick={handleTClickFollowing}>
                 <i class="fas fa-user-plus"></i> Follow
               </button>
             </div>
             <div className="paragraph_div">
-            <p className="post_paragraph">
-                {" "}
-                A paragraph is a series of related sentences developing a
-                central idea, called the topic. Try to think about paragraphs in
-              </p>
+              <p className="post_paragraph"> {user.bio}</p>
+            </div>
           </div>
-          </div>
-
         </div>
       </div>
 
@@ -127,7 +198,7 @@ function Profile() {
 
                 <div className="comment_buttons">
                   <button className="btn_like">
-                    <i class="far fa-heart"></i> Like
+                    <i className="far fa-heart"></i> Like
                   </button>
                   <p className="post_date">553 retweets</p>
                 </div>

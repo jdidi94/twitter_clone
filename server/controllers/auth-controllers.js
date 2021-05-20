@@ -64,7 +64,18 @@ exports.signUp= async function (req, res)  {
       res.send(err);
     }
   }
+exports.getUserInfo=async function  (req, res)  {
+  try{
+    const user = await User.findOne(
+      {_id:req.params.id}
+    );
+    res.send(user);
 
+
+  }catch (err) {
+    console.log(err)
+  }
+}
 exports.getUser= async function  (req, res)  {
 
     try {
@@ -118,4 +129,25 @@ exports.useredit = async function  (req, res)  {
   }catch(err){
     res.send(err)
   }
+}
+exports.updateFollowing= async function  (req, res)  {
+  try{
+    if(req.body.message===true){
+
+      const user = await User.updateOne(
+        { _id: req.params.id },
+        { $addToSet: { following: req.body.following } }
+      );
+      res.send("you are following this user");
+    }else{
+      const user = await User.updateOne(
+        { _id: req.params.id },
+        { $pull: { following: req.body.following } }
+      );
+      res.send("you are not folllowing this user");
+    }
+  }catch(err){
+    console.error(err)
+  }
+
 }

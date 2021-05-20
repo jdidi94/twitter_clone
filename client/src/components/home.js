@@ -2,8 +2,8 @@ import { React, useState, useEffect } from "react";
 import "./home.css";
 import axios from "axios";
 import ReactDOM from "react-dom";
-// import moment from "moment";
-function Home() {
+import moment from "moment";
+function Home(props) {
   const [post, createPost] = useState("");
   const [photo, createPhoto] = useState("");
   const [kane, setPublic] = useState(false);
@@ -11,14 +11,29 @@ function Home() {
   const [getPosts, setPosts] = useState([]);
   const [comment, createComment] = useState("");
   const [submit, setSubmit] = useState("");
-  const [likes, setLikes] = useState("");
-  const [colorLikes, setColorLikes] = useState(true);
-  const [tweets, setTweets] = useState("");
-  const [colorTweets, setColorTweets] = useState(true);
-  const [saved, setSaved] = useState("");
-  const [colorSaved, setColorSaved] = useState(true);
 
-  // const [pub,setPublic]=useState(false)
+
+ const currentDateTime=(date)=> {
+    const dateNow = moment();
+
+    if (dateNow.diff(date, "seconds") <= 60) {
+      return moment(date)
+        .startOf("seconds")
+        .fromNow();
+    } else if (dateNow.diff(date, "minutes") > 1) {
+      return moment(date)
+        .startOf("minutes")
+        .fromNow();
+    }
+     else if (dateNow.diff(date, "hours") >= 1) {
+      return moment()
+        .endOf("day", "hours", "minutes")
+        .fromNow();
+    }
+     else if(dateNow.diff(date, "days") >= 1) {
+      return moment(date).format("MMMM Do YYYY, h:mm:ss a");
+    }
+  }
   const getUser = () => {
     const token = localStorage.getItem("token");
     const headers = { headers: { Authorization: `Bearer ${token}` } };
@@ -84,7 +99,8 @@ function Home() {
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
         console.log("this is the comment id ", data);
-        // setCurrent(data._id)
+        
+         
         comments.push(data._id);
       })
       .then(() => {
@@ -118,6 +134,7 @@ function Home() {
       .post("http://localhost:4000/api/post/", data)
       .then((res) => {
         console.log("your data is posted", res);
+        setSubmit(!submit);
       })
       .catch((err) => {
         console.log(err);
@@ -126,7 +143,6 @@ function Home() {
   const handleLikesClick = (id, like, e) => {
     e.preventDefault();
 
-    console.log("here like", like);
     setSubmit(!submit);
     if (!like.includes(user._id)) {
       const element = document.getElementById(id + "like");
@@ -140,7 +156,6 @@ function Home() {
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
         .then(({ data }) => {
           console.log(data);
-          console.log("colors", colorLikes);
         })
         .catch((err) => {
           console.log(err);
@@ -157,7 +172,6 @@ function Home() {
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
         .then(({ data }) => {
           console.log(data);
-          console.log("colors", colorLikes);
         })
         .catch((err) => {
           console.log(err);
@@ -195,13 +209,13 @@ function Home() {
         .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
         .then(({ data }) => {
           console.log(data);
-          console.log("colors", colorTweets);
         })
         .catch((err) => {
           console.log(err);
         });
     }
   };
+
   const handleTClickSaved = (id, save, e) => {
     e.preventDefault();
 
@@ -239,6 +253,12 @@ function Home() {
         });
     }
   };
+  const pushUserClick=(id)=>{
+    props.history.push({
+      pathname: `/profile/${id}`,
+        state:{id:id,user:user} // your data array of objects
+    })
+  }
 
   // home post mapping
   const onePost = getPosts.map((element) => (
@@ -247,7 +267,7 @@ function Home() {
         <img className="tof_post" src={element.user.photo} />
         <div>
           <h5 className="user_name">{element.user.name}</h5>
-          <p className="post_date">14:15 13:00 pm</p>
+          <p className="post_date">{currentDateTime(element.date)}</p>
         </div>
       </div>
       <div className="post_content">
@@ -333,8 +353,8 @@ function Home() {
               <img className="photo_comment" src={comment.userPhoto} />
               <div className="comment_details">
                 <div className="div_name_date">
-                  <h6 className="comment_name">{comment.userName}</h6>
-                  <p className="comment_date">14:15 13:00 pm</p>
+                  <h6 className="comment_name" onClick={()=>{pushUserClick(comment.user)}}>{comment.userName}</h6>
+                  <p className="comment_date">{currentDateTime(comment.createdAt)}</p>
                 </div>
                 <p className="comment_paragraph">{comment.comment}</p>
               </div>

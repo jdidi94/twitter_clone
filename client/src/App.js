@@ -87,7 +87,7 @@ function App(props) {
           <Switch>
             <Route exact path="/" component={Login} />
             <Route exact path="/home" component={Home} />
-            <Route exact path="/profile" component={Profile} />
+            <Route exact path="/profile/:id" component={Profile} />
             <Route exact path="/bookMarks" component={Bookmark} />
             <Route exact path="/explore" component={Explore} />
             <Route exact path="/edit" component={EditUser} />

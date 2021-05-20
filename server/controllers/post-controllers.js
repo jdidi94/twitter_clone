@@ -17,7 +17,7 @@ exports.createPosts = async function (req, res) {
 
 exports.getAllPosts = async function (req, res) {
   try {
-    const post = await Post.find({})
+    const post = await Post.find({}).sort({createdAt:-1})
       .populate("user")
       .populate("comments")
       .exec();
@@ -33,8 +33,11 @@ exports.updateComment = async function (req, res) {
       { _id: req.params.id },
       {
         $push: {
-          comments: req.body.comments,
-        },
+           comments: {
+              $each: [req.body.comments],
+              $position: 0
+           }
+        }
       }
     );
     res.send("updated post with commment");

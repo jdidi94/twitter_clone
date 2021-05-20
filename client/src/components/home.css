@@ -102,7 +102,9 @@
   order: 2;
   background-color: #1e90ff;
 }
-
+.btn.btn-secondary .dropdown-toggle:hover{ 
+  color:blue !important
+}
 
 .dropdown-toggle {
   background: none !important;
