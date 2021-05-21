@@ -10,5 +10,10 @@ router.post("/signup", userController.signUp);
 router.post("/login", userController.login);
 router.patch("/:id", userController.useredit);
 router.patch("/following/:id", userController.updateFollowing);
+router.patch("/followers/:id", userController.updateFollowers);
+
+router.patch("/likes/:id", userController.updateLikes);
+router.patch("/saved/:id", userController.updateSaved);
+router.patch("/retweet/:id", userController.updateRetweets);
 
 module.exports = router;

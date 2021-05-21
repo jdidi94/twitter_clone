@@ -131,41 +131,41 @@
     border-radius: 20px;
   }
 
-  .profile-div {
+  /* .profile-div {
     margin: 20px 50px;
     max-width: 200px;
     position: relative;
     border-radius: 50%;
-  }
-  .profile-div:hover .overlay {
+  } */
+  /* .profile-div:hover .overlay {
     background-color: rgba(0, 0, 0, 0.5);
-  }
-  .profile-div:hover .overlay .para-pic {
+  } */
+  /* .profile-div:hover .overlay .para-pic {
     display: block;
-  }
-  .profile-div .img-div {
+  } */
+  /* .profile-div .img-div {
     display: block;
     width: 100%;
     border-radius: 50%;
     height: auto;
-  }
-  .profile-div .overlay {
+  } */
+  /* .profile-div .overlay {
     position: absolute;
     width: 100%;
     bottom: 0;
     overflow: hidden;
     height: 100%;
     border-radius: 50%;
-  }
-  .profile-div .overlay input {
+  } */
+  /* .profile-div .overlay input {
     width: 100%;
     position: absolute;
     opacity: 0;
     bottom: 20px;
     z-index: 2;
     cursor: pointer;
-  }
-  .profile-div .overlay .para-pic {
+  } */
+  /* .profile-div .overlay .para-pic {
     position: absolute;
     bottom: 10px;
     font-weight: bold;
@@ -173,4 +173,38 @@
     color: #fff;
     width: 100%;
     display: none;
-  }
+  } */
+  .image-up> #imgInp
+{
+    display: none;
+} 
+#blah{
+  width: 100px;
+  height: 100px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+.image-up{
+  display:flex;
+  padding-left:100px;
+  gap:10px
+}
+.div_text_pofile{
+display: flex;
+align-items: center;
+justify-content: center;
+
+}
+.image-cover_div> #img_cover
+{
+    display: none;
+} 
+.image-cover_div{
+  padding-left:100px;
+}
+#cover{
+  width: 400px;
+  height: 100px;
+  margin-top: 10px;
+  border-radius: 5px;
+}

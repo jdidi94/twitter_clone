@@ -11,29 +11,21 @@ function Home(props) {
   const [getPosts, setPosts] = useState([]);
   const [comment, createComment] = useState("");
   const [submit, setSubmit] = useState("");
+  const [photoComment, setphotoComment] = useState("");
 
-
- const currentDateTime=(date)=> {
+  const currentDateTime = (date) => {
     const dateNow = moment();
 
     if (dateNow.diff(date, "seconds") <= 60) {
-      return moment(date)
-        .startOf("seconds")
-        .fromNow();
+      return moment(date).startOf("seconds").fromNow();
     } else if (dateNow.diff(date, "minutes") > 1) {
-      return moment(date)
-        .startOf("minutes")
-        .fromNow();
-    }
-     else if (dateNow.diff(date, "hours") >= 1) {
-      return moment()
-        .endOf("day", "hours", "minutes")
-        .fromNow();
-    }
-     else if(dateNow.diff(date, "days") >= 1) {
+      return moment(date).startOf("minutes").fromNow();
+    } else if (dateNow.diff(date, "hours") >= 1) {
+      return moment().endOf("day", "hours", "minutes").fromNow();
+    } else if (dateNow.diff(date, "days") >= 1) {
       return moment(date).format("MMMM Do YYYY, h:mm:ss a");
     }
-  }
+  };
   const getUser = () => {
     const token = localStorage.getItem("token");
     const headers = { headers: { Authorization: `Bearer ${token}` } };
@@ -59,7 +51,6 @@ function Home(props) {
     getAllPosts();
   }, [submit]);
   const uploadImage = (event) => {
-    console.log("hii");
     event.preventDefault();
     const image = new FormData();
     image.append("file", event.target.files[0]);
@@ -69,6 +60,22 @@ function Home(props) {
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         createPhoto(data.url);
+        console.log("this is the photo uploaded", data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const uploadImageComment = (event) => {
+    event.preventDefault();
+    const image = new FormData();
+    image.append("file", event.target.files[0]);
+    image.append("upload_preset", "tyfhc3lt");
+    console.log("photo", event.target.files[0]);
+    axios
+      .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
+      .then(({ data }) => {
+        setphotoComment(data.url);
         console.log("this is the photo uploaded", data);
       })
       .catch((err) => {
@@ -94,13 +101,13 @@ function Home(props) {
       post: id,
       user: user._id,
       comment: comment,
+      photoComment: photoComment,
     };
     axios
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
         console.log("this is the comment id ", data);
-        
-         
+
         comments.push(data._id);
       })
       .then(() => {
@@ -159,6 +166,16 @@ function Home(props) {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .then(() => {
+          axios
+            .patch(`http://localhost:4000/api/user/likes/${user._id}`, data)
+            .then(({ data }) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         });
     } else if (like.includes(user._id)) {
       const element = document.getElementById(id + "like");
@@ -175,6 +192,16 @@ function Home(props) {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .then(() => {
+          axios
+            .patch(`http://localhost:4000/api/user/likes/${user._id}`, data)
+            .then(({ data }) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         });
     }
   };
@@ -197,6 +224,16 @@ function Home(props) {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .then(() => {
+          axios
+            .patch(`http://localhost:4000/api/user/retweet/${user._id}`, data)
+            .then(({ data }) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         });
     } else if (retweets.includes(user._id)) {
       const element = document.getElementById(id + "retweet");
@@ -212,6 +249,16 @@ function Home(props) {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .then(() => {
+          axios
+            .patch(`http://localhost:4000/api/user/retweet/${user._id}`, data)
+            .then(({ data }) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         });
     }
   };
@@ -235,6 +282,16 @@ function Home(props) {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .then(() => {
+          axios
+            .patch(`http://localhost:4000/api/user/saved/${user._id}`, data)
+            .then(({ data }) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         });
     } else if (save.includes(user._id)) {
       let element = document.getElementById(id + "save");
@@ -250,15 +307,25 @@ function Home(props) {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .then(() => {
+          axios
+            .patch(`http://localhost:4000/api/user/saved/${user._id}`, data)
+            .then(({ data }) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         });
     }
   };
-  const pushUserClick=(id)=>{
+  const pushUserClick = (id) => {
     props.history.push({
       pathname: `/profile/${id}`,
-        state:{id:id,user:user} // your data array of objects
-    })
-  }
+      state: { id: id, user: user }, // your data array of objects
+    });
+  };
 
   // home post mapping
   const onePost = getPosts.map((element) => (
@@ -325,14 +392,18 @@ function Home(props) {
             onChange={handleCommentChange}
           ></textarea>
           <div className="image-upload">
-            <label htmlFor="file-input">
+            <label htmlFor="files">
               <i
                 className="far fa-image"
                 style={{ fontSize: "40px", color: "grey" }}
               ></i>
             </label>
 
-            <input id="file-input" type="file" />
+            <input
+              id="files"
+              type="file"
+              onChange={(event) => uploadImageComment(event)}
+            />
           </div>
         </div>
 
@@ -353,10 +424,26 @@ function Home(props) {
               <img className="photo_comment" src={comment.userPhoto} />
               <div className="comment_details">
                 <div className="div_name_date">
-                  <h6 className="comment_name" onClick={()=>{pushUserClick(comment.user)}}>{comment.userName}</h6>
-                  <p className="comment_date">{currentDateTime(comment.createdAt)}</p>
+                  <h6
+                    className="comment_name"
+                    onClick={() => {
+                      pushUserClick(comment.user);
+                    }}
+                  >
+                    {comment.userName}
+                  </h6>
+                  <p className="comment_date">
+                    {currentDateTime(comment.createdAt)}
+                  </p>
                 </div>
                 <p className="comment_paragraph">{comment.comment}</p>
+                {comment.photoComment ? (
+                  <div className="photo_comment_div">
+                    <img className="photo_shown" src={comment.photoComment} />
+                  </div>
+                ) : (
+                  <div className="photo_comment_div"></div>
+                )}
               </div>
             </div>
 

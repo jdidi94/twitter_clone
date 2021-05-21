@@ -40,36 +40,64 @@ function Profile(props) {
 
   
     if (!user.following.includes(state.user._id)) {
+      const data1={
+        message: true,
+        followers: state.user._id,
+      }
       const data = {
         message: true,
-        following: state.user._id,
+        following: state.id,
       };
       axios
-        .patch(`http://localhost:4000/api/user/following/${state.id}`, data)
+        .patch(`http://localhost:4000/api/user/following/${state.user._id}`, data)
         .then(({ data }) => {
           console.log(data);
-          setload(!load);
+    
         })
         .catch((err) => {
           console.log(err);
-        });
+        }).then(() => {
+          axios
+          .patch(`http://localhost:4000/api/user/followers/${state.id}`, data1)
+          .then(({ data }) => {
+            console.log(data);
+            setload(!load);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+        })
     } else if (user.following.includes(user._id)) {
       // let element = document.getElementById(id + "save");
       // ReactDOM.findDOMNode(element).style.color = "black";
+      const data1={
+        message: false,
+        followers: state.user._id,
+      }
       const data = {
         message: false,
-        following: state.user._id,
+        following: state.id,
       };
       axios
-        .patch(`http://localhost:4000/api/user/following/${state.id}`, data)
+        .patch(`http://localhost:4000/api/user/following/${state.user._id}`, data)
         .then(({ data }) => {
-          setload(!load);
-
+   
           console.log(data);
         })
         .catch((err) => {
           console.log(err);
-        });
+        }).then(() => {
+          axios
+          .patch(`http://localhost:4000/api/user/followers/${state.id}`, data1)
+          .then(({ data }) => {
+            console.log(data);
+            setload(!load);
+
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+        })
     }
   };
   const pushUserClick = (id) => {
@@ -82,12 +110,24 @@ function Profile(props) {
   return (
     <div className="profile_container">
       <div className="all_info">
+        {user.cover?(
         <div style={{ background: "red" }} className="photosize">
+          <img
+            className="profle_tof"
+            src={user.cover}
+          />
+        </div>
+
+        ):(
+          <div style={{ background: "red" }} className="photosize">
           <img
             className="profle_tof"
             src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
           />
         </div>
+        )
+
+        }
         {/* group info */}
         <div className="info_group" style={{ background: "white" }}>
           <div className="image_div">

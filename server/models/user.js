@@ -11,11 +11,11 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
     }],
-    retweet: [{
+    retweets: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
     }],
-    like: [{
+    likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
     }],

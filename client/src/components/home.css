@@ -227,10 +227,21 @@
   height: 30px;
   border-radius: 10px;
 }
+.photo_shown{
+  width: 150px;
+  height: 200px;
+  border-radius: 10px;
+
+}
 .comment_name {
   font-weight: 13px;
   font-weight: 600;
   margin: 0;
+}
+.photo_comment_div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .comment_date {
   margin: 0;
@@ -317,22 +328,23 @@ line-height:1.2;
 }
 /* input file */
 
-/* .image-upload > #file-input
+ .image-upload > #file-input
 {
     display: none;
-} */
+} 
 
 .image-upload .fa-image
 {
     width: 80px;
     cursor: pointer;
    
-  
-
-
 }
 .tarea{
   display:flex;
   margin:0;
   width:100%;
 }
+.image-upload > #files
+{
+    display: none;
+} 

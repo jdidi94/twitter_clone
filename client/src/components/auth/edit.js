@@ -5,6 +5,7 @@ import swal from "sweetalert";
 function EditUser() {
   const [edit, setEdit] = useState(false);
   const [user, setUser] = useState({});
+  const [cover,setCover]=useState("")
   const [Info, editInfo] = useState({
     name: "",
     password: "",
@@ -13,7 +14,7 @@ function EditUser() {
     bio: "",
   });
 
-  const sowPhoto=user.photo
+  const sowPhoto = user.photo;
 
   const [submit, setSubmit] = useState(false);
   const [photo, setPhoto] = useState("");
@@ -26,6 +27,8 @@ function EditUser() {
         // console.log("USERBEFORE", this.user);
         console.log("here", data);
         setUser(data);
+        setPhoto(data.photo)
+        setCover(data.cover)
       })
       .catch((err) => {
         console.log(err);
@@ -45,6 +48,24 @@ function EditUser() {
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setPhoto(data.url);
+        console.log("this is your photo", data.url);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const uploadImageCover = (event) => {
+    event.preventDefault();
+
+    const image = new FormData();
+
+    image.append("file", event.target.files[0]);
+    image.append("upload_preset", "tyfhc3lt");
+    axios
+      .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
+      .then(({ data }) => {
+        setCover(data.url);
+        console.log("this is your photo", data.url);
       })
       .catch((err) => {
         console.log(err);
@@ -58,6 +79,7 @@ function EditUser() {
       email: Info.email,
       password: Info.password,
       photo: photo,
+      cover:cover
     };
     console.log("userId", user._id);
     const has_special = /[!@#%*+=._-]/.test(Info.password);
@@ -74,13 +96,9 @@ function EditUser() {
         "Oops!",
         "Password needs to have at least one special character and one number",
         "error"
-      );}
-      else if (Info.email!==user.email) {
-        swal(
-          "Oops!",
-          "Add you current email",
-          "error"
-        );
+      );
+    } else if (Info.email !== user.email) {
+      swal("Oops!", "Add you current email", "error");
     } else if (Info.password !== Info.repeatPassword) {
       swal("Oops!", "Password does not match!", "error");
     } else {
@@ -88,10 +106,10 @@ function EditUser() {
         .patch(`http://localhost:4000/api/user/${user._id}`, data)
         .then(({ data }) => {
           swal("Welcome", "success");
-          console.log("the user changed",data)
+          console.log("the user changed", data);
 
           setSubmit(!submit);
-          console.log("submit",submit)
+          console.log("submit", submit);
         });
     }
   };
@@ -124,16 +142,14 @@ function EditUser() {
             <tr className="photo_div">
               <td className="photo_profile">photo</td>
               <td className="button_edit">
-               { sowPhoto===""
-                    ? (<img
-                     className="photo_profile"
-                     src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
-                   />) : (<img
+                {sowPhoto === "" ? (
+                  <img
                     className="photo_profile"
-                    src={user.photo}
-                  />) 
-
-               }   
+                    src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
+                  />
+                ) : (
+                  <img className="photo_profile" src={user.photo} />
+                )}
               </td>
             </tr>
             <tr className="col_tr">
@@ -167,7 +183,7 @@ function EditUser() {
                 changes will reflected in every services
               </p>
             </div>
-            <div className="profile-div">
+            {/* <div className="profile-div">
               <img
                 className="img-div"
                 id="blah"
@@ -191,6 +207,63 @@ function EditUser() {
                 />
                 <p className="para-pic">Change Picture</p>
               </div>
+            </div> */}
+            <div className="image-up">
+              <label htmlFor="imgInp">
+                {photo?(
+
+                  <img
+                    id="blah"
+                    src={photo}
+                  />
+                ):(
+              
+                  <img
+                  id="blah"
+                  src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
+                />
+                )
+
+                }
+              </label>
+
+              <input
+                id="imgInp"
+                type="file"
+                onChange={(event) => uploadImage(event)}
+              />
+              <div className="div_text_pofile">
+                <h6>change your profile photo</h6>
+              </div>
+            </div>
+            <div className="image-cover_div">
+              <label htmlFor="img_cover">
+                {cover?
+                (
+                  <img
+                    id="cover"
+                    src={cover}
+                  />
+
+                ):(
+                  <img
+                  id="cover"
+                  src="https://www.setaswall.com/wp-content/uploads/2017/06/Beutiful-Thought-FB-Cove-Pic-850-x-315-768x285.jpg"
+                />
+                )
+                
+                
+                }
+              </label>
+
+              <input
+                id="img_cover"
+                type="file"
+                onChange={(event) => uploadImageCover(event)}
+              />
+           
+                <h6>change your cover photo</h6>
+      
             </div>
             <form>
               <div className="edit">

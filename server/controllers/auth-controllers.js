@@ -110,6 +110,7 @@ exports.useredit = async function  (req, res)  {
           email: req.body.email,
           password:hash, 
           photo:req.body.photo,
+          cover:req.body.cover,
      
          }})
         res.send({message:"the password updated with data"})
@@ -151,3 +152,85 @@ exports.updateFollowing= async function  (req, res)  {
   }
 
 }
+exports.updateFollowers= async function  (req, res)  {
+  try{
+    if(req.body.message===true){
+
+      const user = await User.updateOne(
+        { _id: req.params.id },
+        { $addToSet: { followers: req.body.followers } }
+      );
+      res.send("you are following this user");
+    }else{
+      const user = await User.updateOne(
+        { _id:req.params.id },
+        { $pull: { followers: req.body.followers } }
+      );
+      res.send("you are not folllowing this user");
+    }
+  }catch(err){
+    console.error(err)
+  }
+
+}
+exports.updateLikes = async function (req, res) {
+  try {
+    if(req.body.message===true){
+
+      const likes = await User.updateOne(
+        { _id: req.params.id },
+        { $addToSet: { likes: req.body.likes }}
+      );
+      res.send("your likes are increased");
+    }else{
+      const likes = await User.updateOne(
+        { _id: req.params.id },
+        { $pull: { likes: req.body.likes } }
+      );
+      res.send("it's removed");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+exports.updateSaved = async function (req, res) {
+  try {
+    if(req.body.message===true){
+
+      const saved = await User.updateOne(
+        { _id: req.params.id },
+        { $addToSet: { saved: req.body.saved } }
+      );
+      res.send("your saved are increased");
+    }else{
+      
+      const saved = await User.updateOne(
+        { _id: req.params.id },
+        { $pull: { saved: req.body.saved } }
+      );
+      res.send("your saved are increased");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+exports.updateRetweets = async function (req, res) {
+  try {
+    if(req.body.message===true){
+
+      const retweets = await User.updateOne(
+        { _id: req.params.id },
+        { $addToSet: { retweets: req.body.retweets } }
+      );
+      res.send("item is added");
+    }else{
+      const retweets = await User.updateOne(
+        { _id: req.params.id },
+        { $pull: { retweets: req.body.retweets } }
+      );
+      res.send("its removed");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};

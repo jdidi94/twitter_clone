@@ -9,6 +9,7 @@ exports.createComment = async function (req, res) {
         post: req.body.post,
         user: req.body.user,
         comment: req.body.comment,
+        photoComment:req.body.photoComment
       });
 
 
