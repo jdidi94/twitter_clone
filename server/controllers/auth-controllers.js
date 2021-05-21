@@ -86,7 +86,9 @@ exports.getUser= async function  (req, res)  {
 
         const user = await User.findOne(
           { email: email.email }
-        );
+        ).populate("followers")
+        .exec();
+
         res.send(user);
       }else{
         res.send("user not found")
@@ -209,26 +211,6 @@ exports.updateSaved = async function (req, res) {
         { $pull: { saved: req.body.saved } }
       );
       res.send("your saved are increased");
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
-exports.updateRetweets = async function (req, res) {
-  try {
-    if(req.body.message===true){
-
-      const retweets = await User.updateOne(
-        { _id: req.params.id },
-        { $addToSet: { retweets: req.body.retweets } }
-      );
-      res.send("item is added");
-    }else{
-      const retweets = await User.updateOne(
-        { _id: req.params.id },
-        { $pull: { retweets: req.body.retweets } }
-      );
-      res.send("its removed");
     }
   } catch (err) {
     console.log(err);

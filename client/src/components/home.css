@@ -52,7 +52,10 @@
   max-height: 400px;
   border-radius: 10px;
   padding: 30px 30px;
+
+  
 }
+
 
 /* new tweets */
 
@@ -325,6 +328,10 @@ line-height:1.2;
   width: 30px;
   height: 30px;
   border-radius: 5px;
+}
+.who_follow{
+    overflow-x: hidden;
+  overflow-y: auto;
 }
 /* input file */
 

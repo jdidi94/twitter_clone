@@ -3,6 +3,8 @@ const postController = require("../controllers/post-controllers");
 
 router.post("/", postController.createPosts);
 router.get("/", postController.getAllPosts);
+router.get("/:id", postController.getOneUserPosts);
+
 router.patch("/:id", postController.updateComment);
 router.patch("/likes/:id", postController.updateLikes);
 router.patch("/saved/:id", postController.updateSaved);

@@ -65,12 +65,16 @@
   padding-top: 20px;
   justify-content: center;
 }
+
 .post_profile_container {
-  grid-area: post_container;
+  grid-area:post_container ;
   border-radius: 10px;
-  padding: 30px 30px;
+   display:grid;
   max-width: 650px;
-  height: auto;
+  background: linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%);
+
+  height:100%;
+  gap:40px
 }
 .follow_button {
   margin-left: auto;

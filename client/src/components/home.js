@@ -12,6 +12,7 @@ function Home(props) {
   const [comment, createComment] = useState("");
   const [submit, setSubmit] = useState("");
   const [photoComment, setphotoComment] = useState("");
+  const [followersUser, setfollowers] = useState([]);
 
   const currentDateTime = (date) => {
     const dateNow = moment();
@@ -26,6 +27,16 @@ function Home(props) {
       return moment(date).format("MMMM Do YYYY, h:mm:ss a");
     }
   };
+  const filterFollowers = (data1, data2) => {
+    const arr = [];
+
+    data1.map((element) => {
+      if (!data2.includes(element._id)) {
+        arr.push(element);
+      }
+    });
+    return arr;
+  };
   const getUser = () => {
     const token = localStorage.getItem("token");
     const headers = { headers: { Authorization: `Bearer ${token}` } };
@@ -35,6 +46,8 @@ function Home(props) {
         // console.log("USERBEFORE", this.user);
         console.log("here", data);
         setUser(data);
+
+        setfollowers(filterFollowers(data.followers, data.following));
       })
       .catch((err) => {
         console.log(err);
@@ -205,62 +218,40 @@ function Home(props) {
         });
     }
   };
-  const handleTweetsClick = (id, retweets, e) => {
+  const handleTweetsClick = (id, e, postuser, photouser) => {
     e.preventDefault();
-
+    const data1 = {
+      user: user._id,
+      post: postuser,
+      photo: photouser,
+      public: false,
+    };
     const element = document.getElementById(id + "retweet");
     ReactDOM.findDOMNode(element).style.color = "green";
-    console.log("here like", retweets);
-    setSubmit(!submit);
-    if (!retweets.includes(user._id)) {
-      const data = {
-        message: true,
-        retweets: user._id,
-      };
-      axios
-        .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
-        .then(({ data }) => {
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .then(() => {
-          axios
-            .patch(`http://localhost:4000/api/user/retweet/${user._id}`, data)
-            .then(({ data }) => {
-              console.log(data);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        });
-    } else if (retweets.includes(user._id)) {
-      const element = document.getElementById(id + "retweet");
-      ReactDOM.findDOMNode(element).style.color = "black";
-      const data = {
-        message: false,
-        retweets: user._id,
-      };
-      axios
-        .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
-        .then(({ data }) => {
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .then(() => {
-          axios
-            .patch(`http://localhost:4000/api/user/retweet/${user._id}`, data)
-            .then(({ data }) => {
-              console.log(data);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        });
-    }
+
+    const data = {
+      retweets: user._id,
+    };
+    axios
+      .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
+      .then(({ data }) => {
+        console.log(data);
+        
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .then(() => {
+        axios
+          .post(`http://localhost:4000/api/post/`, data1)
+          .then(({ data }) => {
+        
+            console.log("posted done",data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
   };
 
   const handleTClickSaved = (id, save, e) => {
@@ -326,6 +317,45 @@ function Home(props) {
       state: { id: id, user: user }, // your data array of objects
     });
   };
+  const handleTClickFollowing = (e, id) => {
+    e.preventDefault();
+
+    // let element = document.getElementById(id + "save");
+    // ReactDOM.findDOMNode(element).style.color = "blue";
+
+    if (!user.following.includes(id)) {
+      const data = {
+        message: true,
+        following: id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/user/following/${user._id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+          setSubmit(!submit);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (user.following.includes(id)) {
+      // let element = document.getElementById(id + "save");
+      // ReactDOM.findDOMNode(element).style.color = "black";
+
+      const data = {
+        message: false,
+        following: id,
+      };
+      axios
+        .patch(`http://localhost:4000/api/user/following/${user._id}`, data)
+        .then(({ data }) => {
+          setSubmit(!submit);
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
 
   // home post mapping
   const onePost = getPosts.map((element) => (
@@ -354,7 +384,7 @@ function Home(props) {
         <button
           className="btn_button"
           onClick={(e) => {
-            handleTweetsClick(element._id, element.retweets, e);
+            handleTweetsClick(element._id, e, element.post, element.photo);
           }}
           id={element._id + "retweet"}
         >
@@ -462,32 +492,31 @@ function Home(props) {
     <div className="home_contain">
       {/* who follows */}
       <div style={{ background: "white" }} className="who_follow">
-        <div className="follow_container">
-          <h5 className="tweet_title">who follows you</h5>
-          <hr />
-          <div className="follow_info">
-            <img
-              className="follow_img"
-              src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
-            />
-            <div>
-              <h5 className="follow_name">jdidi daoud</h5>
-              <p className="follow_numbers">245k followers</p>
+        <h5 className="tweet_title">who follows you</h5>
+        <hr />
+        {followersUser.map((element) => (
+          <div key={element._id} className="follow_container">
+            <div className="follow_info">
+              <img className="follow_img" src={element.photo} />
+              <div>
+                <h5 className="follow_name">{element.name}</h5>
+                <p className="follow_numbers">
+                  {element.followers.length}followers
+                </p>
+              </div>
+              <button
+                className="follow_button"
+                onClick={(e) => {
+                  handleTClickFollowing(e, element._id);
+                }}
+              >
+                <i className="fas fa-user-plus"></i> Follow
+              </button>
             </div>
-            <button className="follow_button">
-              <i className="fas fa-user-plus"></i> Follow
-            </button>
+            <p className="follow_paragraph"> {element.bio}</p>
+            <img className="big_img" src={element.cover} />
           </div>
-          <p className="follow_paragraph">
-            {" "}
-            A paragraph is a series of related sentences developing a central
-            idea, called the topic. Try to think about paragraphs in
-          </p>
-          <img
-            className="big_img"
-            src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
-          />
-        </div>
+        ))}
       </div>
       {/* trends */}
       <div style={{ background: "white" }} className="trends">
