@@ -3,7 +3,10 @@ const postController = require("../controllers/post-controllers");
 
 router.post("/", postController.createPosts);
 router.get("/", postController.getAllPosts);
-router.get("/:id", postController.getOneUserPosts);
+router.get("/user/follower/:id", postController.getAllPostsFollower); 
+router.get("/user/:id", postController.getOneUserPosts);
+router.get("/bookmarks/:id", postController.savedPosts);
+
 
 router.patch("/:id", postController.updateComment);
 router.patch("/likes/:id", postController.updateLikes);

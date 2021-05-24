@@ -139,15 +139,15 @@ exports.updateFollowing= async function  (req, res)  {
 
       const user = await User.updateOne(
         { _id: req.params.id },
-        { $addToSet: { following: req.body.following } }
+        { $addToSet: { following: req.body.following }}
       );
       res.send("you are following this user");
-    }else{
+    }else if (req.body.message===false){
       const user = await User.updateOne(
         { _id: req.params.id },
         { $pull: { following: req.body.following } }
       );
-      res.send("you are not folllowing this user");
+      res.send(user);
     }
   }catch(err){
     console.error(err)
@@ -155,18 +155,21 @@ exports.updateFollowing= async function  (req, res)  {
 
 }
 exports.updateFollowers= async function  (req, res)  {
+ 
   try{
     if(req.body.message===true){
 
       const user = await User.updateOne(
         { _id: req.params.id },
-        { $addToSet: { followers: req.body.followers } }
+        { $addToSet: { followers: req.body.followers },
+      $inc:{"followersNumber":1} }
       );
       res.send("you are following this user");
     }else{
       const user = await User.updateOne(
         { _id:req.params.id },
-        { $pull: { followers: req.body.followers } }
+        { $pull: { followers: req.body.followers } ,
+        $inc:{"followersNumber":-1} }
       );
       res.send("you are not folllowing this user");
     }
@@ -216,3 +219,13 @@ exports.updateSaved = async function (req, res) {
     console.log(err);
   }
 };
+exports.allUsers=async function  (req, res)  {
+  try {
+    const user = await User.find({}).sort({ followersNumber: -1 })
+ 
+
+    res.send(user);
+  } catch (err) {
+    console.log(err);
+  }
+}

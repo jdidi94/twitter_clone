@@ -12,7 +12,7 @@ router.post("/login", userController.login);
 router.patch("/:id", userController.useredit);
 router.patch("/following/:id", userController.updateFollowing);
 router.patch("/followers/:id", userController.updateFollowers);
-
+router.get("/users",userController.allUsers)
 router.patch("/likes/:id", userController.updateLikes);
 router.patch("/saved/:id", userController.updateSaved);
 

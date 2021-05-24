@@ -105,8 +105,8 @@
   order: 2;
   background-color: #1e90ff;
 }
-.btn.btn-secondary .dropdown-toggle:hover{ 
-  color:blue !important
+.btn-secondary:hover{ 
+color: #1e90ff;
 }
 
 .dropdown-toggle {
@@ -129,6 +129,7 @@
 }
 .user_name {
   margin: 0;
+  cursor: pointer;
 }
 .post_date {
   margin: 0;
@@ -240,6 +241,7 @@
   font-weight: 13px;
   font-weight: 600;
   margin: 0;
+  cursor: pointer;
 }
 .photo_comment_div{
   display: flex;
@@ -283,6 +285,10 @@
 .trends_div {
   line-height: 1.5;
   padding: 5px;
+  cursor: pointer;
+}
+.trends_div:hover{
+  background-color:#1e90ff
 }
 /* foolow container */
 .follow_info{
@@ -295,6 +301,7 @@ margin: 0;
 font-size: 13px;
 font-weight: 600;
 margin: 0;
+cursor: pointer;
 }
 .follow_numbers{
   font-size: 12px;
@@ -355,3 +362,17 @@ line-height:1.2;
 {
     display: none;
 } 
+.follow_name:hover{
+  text-decoration: underline;
+ 
+}
+.comment_name:hover{
+  color:#1e90ff;
+  text-decoration: underline;
+
+}
+.user_name:hover{
+  
+  color:#1e90ff;
+  text-decoration: underline;
+}

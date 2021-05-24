@@ -4,6 +4,7 @@ import axios from "axios";
 import ReactDOM from "react-dom";
 import moment from "moment";
 function Home(props) {
+  const [allUsers, setUsers] = useState([]);
   const [post, createPost] = useState("");
   const [photo, createPhoto] = useState("");
   const [kane, setPublic] = useState(false);
@@ -12,8 +13,50 @@ function Home(props) {
   const [comment, createComment] = useState("");
   const [submit, setSubmit] = useState("");
   const [photoComment, setphotoComment] = useState("");
+  const [color, setColor] = useState(false);
   const [followersUser, setfollowers] = useState([]);
-
+  const [userTrends, setTrends] = useState([]);
+  const saveState = () => {
+    getPosts.map((element) => {
+      console.log("element", element);
+      if (element.saved.includes(user._id)) {
+        const attribute = document.getElementById(element._id + "save");
+        ReactDOM.findDOMNode(attribute).style.color = "blue";
+      } else {
+        const attribute = document.getElementById(element._id + "save");
+        ReactDOM.findDOMNode(attribute).style.color = "black";
+      }
+    });
+  };
+  const likesState = () => {
+    getPosts.map((element) => {
+      if (element.likes.includes(user._id)) {
+        const attribute = document.getElementById(element._id + "like");
+        ReactDOM.findDOMNode(attribute).style.color = "pink";
+      } else {
+        const attribute = document.getElementById(element._id + "like");
+        ReactDOM.findDOMNode(attribute).style.color = "black";
+      }
+    });
+  };
+  const retweetsState = () => {
+    console.log("hiiiiii");
+    getPosts.map((element) => {
+      console.log("element", element);
+      if (element.retweets.includes(user._id)) {
+        const attribute = document.getElementById(element._id + "retweet");
+        ReactDOM.findDOMNode(attribute).style.color = "green";
+      } else {
+        const attribute = document.getElementById(element._id + "retweet");
+        ReactDOM.findDOMNode(attribute).style.color = "black";
+      }
+    });
+  };
+  useEffect(() => {
+    saveState();
+    likesState();
+    retweetsState();
+  }, [color]);
   const currentDateTime = (date) => {
     const dateNow = moment();
 
@@ -37,6 +80,7 @@ function Home(props) {
     });
     return arr;
   };
+
   const getUser = () => {
     const token = localStorage.getItem("token");
     const headers = { headers: { Authorization: `Bearer ${token}` } };
@@ -53,15 +97,43 @@ function Home(props) {
         console.log(err);
       });
   };
-  const getAllPosts = () => {
-    axios.get("http://localhost:4000/api/post/").then(({ data }) => {
-      console.log("here all post", data);
-      setPosts(data);
+
+  const filterTrends = (data) => {
+    const arr = [];
+
+    data.map((element) => {
+      if (element._id !== user._id && !element.followers.includes(user._id)) {
+        arr.push(element);
+      }
     });
+    return arr.slice(0, 4);
+  };
+  const getAllPosts = () => {
+    axios
+      .get(`http://localhost:4000/api/post/user/follower/${user._id}`)
+      .then((data) => {
+        console.log("here all post", data.data);
+        setPosts(data.data);
+      });
+  };
+
+  const getallUsers = () => {
+    axios
+      .get("http://localhost:4000/api/user/users")
+      .then(({ data }) => {
+        // console.log("USERBEFORE", this.user);
+        setUsers(filterTrends(data));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   useEffect(() => {
-    getUser();
     getAllPosts();
+    getallUsers();
+  }, [user._id, submit]);
+  useEffect(() => {
+    getUser();
   }, [submit]);
   const uploadImage = (event) => {
     event.preventDefault();
@@ -79,6 +151,7 @@ function Home(props) {
         console.log(err);
       });
   };
+
   const uploadImageComment = (event) => {
     event.preventDefault();
     const image = new FormData();
@@ -122,6 +195,7 @@ function Home(props) {
         console.log("this is the comment id ", data);
 
         comments.push(data._id);
+        setSubmit(!submit);
       })
       .then(() => {
         console.log(comments);
@@ -136,6 +210,7 @@ function Home(props) {
         console.log(err);
       });
   };
+
   //   const handleKeypress =(e,id)  => {
   //     //it triggers by pressing the enter key
   //   if (e.keyCode === 13) {
@@ -160,6 +235,7 @@ function Home(props) {
         console.log(err);
       });
   };
+
   const handleLikesClick = (id, like, e) => {
     e.preventDefault();
 
@@ -172,6 +248,11 @@ function Home(props) {
         message: true,
         likes: user._id,
       };
+
+      const data2 = {
+        message: true,
+        likes: id,
+      };
       axios
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
         .then(({ data }) => {
@@ -182,7 +263,7 @@ function Home(props) {
         })
         .then(() => {
           axios
-            .patch(`http://localhost:4000/api/user/likes/${user._id}`, data)
+            .patch(`http://localhost:4000/api/user/likes/${user._id}`, data2)
             .then(({ data }) => {
               console.log(data);
             })
@@ -193,7 +274,10 @@ function Home(props) {
     } else if (like.includes(user._id)) {
       const element = document.getElementById(id + "like");
       ReactDOM.findDOMNode(element).style.color = "black";
-
+      const data2 = {
+        message: false,
+        likes: id,
+      };
       const data = {
         message: false,
         likes: user._id,
@@ -208,7 +292,7 @@ function Home(props) {
         })
         .then(() => {
           axios
-            .patch(`http://localhost:4000/api/user/likes/${user._id}`, data)
+            .patch(`http://localhost:4000/api/user/likes/${user._id}`, data2)
             .then(({ data }) => {
               console.log(data);
             })
@@ -226,8 +310,6 @@ function Home(props) {
       photo: photouser,
       public: false,
     };
-    const element = document.getElementById(id + "retweet");
-    ReactDOM.findDOMNode(element).style.color = "green";
 
     const data = {
       retweets: user._id,
@@ -236,7 +318,8 @@ function Home(props) {
       .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
       .then(({ data }) => {
         console.log(data);
-        
+        const element = document.getElementById(id + "retweet");
+        ReactDOM.findDOMNode(element).style.color = "green";
       })
       .catch((err) => {
         console.log(err);
@@ -245,8 +328,8 @@ function Home(props) {
         axios
           .post(`http://localhost:4000/api/post/`, data1)
           .then(({ data }) => {
-        
-            console.log("posted done",data);
+            console.log("posted done", data);
+            setSubmit(!submit);
           })
           .catch((err) => {
             console.log(err);
@@ -260,11 +343,14 @@ function Home(props) {
     let element = document.getElementById(id + "save");
     ReactDOM.findDOMNode(element).style.color = "blue";
 
-    setSubmit(!submit);
     if (!save.includes(user._id)) {
       const data = {
         message: true,
         saved: user._id,
+      };
+      const data2 = {
+        message: true,
+        saved: id,
       };
       axios
         .patch(`http://localhost:4000/api/post/saved/${id}`, data)
@@ -276,9 +362,10 @@ function Home(props) {
         })
         .then(() => {
           axios
-            .patch(`http://localhost:4000/api/user/saved/${user._id}`, data)
+            .patch(`http://localhost:4000/api/user/saved/${user._id}`, data2)
             .then(({ data }) => {
               console.log(data);
+              setSubmit(!submit);
             })
             .catch((err) => {
               console.log(err);
@@ -291,6 +378,10 @@ function Home(props) {
         message: false,
         saved: user._id,
       };
+      const data2 = {
+        message: false,
+        saved: id,
+      };
       axios
         .patch(`http://localhost:4000/api/post/saved/${id}`, data)
         .then(({ data }) => {
@@ -304,6 +395,7 @@ function Home(props) {
             .patch(`http://localhost:4000/api/user/saved/${user._id}`, data)
             .then(({ data }) => {
               console.log(data);
+              setSubmit(!submit);
             })
             .catch((err) => {
               console.log(err);
@@ -311,6 +403,7 @@ function Home(props) {
         });
     }
   };
+
   const pushUserClick = (id) => {
     props.history.push({
       pathname: `/profile/${id}`,
@@ -356,6 +449,43 @@ function Home(props) {
         });
     }
   };
+  const handleCommentLikesClick = (e,id,element) => {
+    e.preventDefault();
+
+    if(!element.includes(user._id)){
+      const data = {
+        likes: user._id,
+        message:true
+      };
+  
+      axios
+        .patch(`http://localhost:4000/api/comment/${id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+          setSubmit(!submit);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    }else{
+      const data = {
+        likes: user._id,
+        message:false
+      };
+          axios
+            .post(`http://localhost:4000/api/comment/${id}`, data)
+            .then(({ data }) => {
+              console.log("posted done", data);
+              setSubmit(!submit);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+  
+    }
+
+
+  };
 
   // home post mapping
   const onePost = getPosts.map((element) => (
@@ -363,7 +493,14 @@ function Home(props) {
       <div className="info">
         <img className="tof_post" src={element.user.photo} />
         <div>
-          <h5 className="user_name">{element.user.name}</h5>
+          <h5
+            className="user_name"
+            onClick={() => {
+              pushUserClick(element.user._id);
+            }}
+          >
+            {element.user.name}
+          </h5>
           <p className="post_date">{currentDateTime(element.date)}</p>
         </div>
       </div>
@@ -410,10 +547,7 @@ function Home(props) {
         </button>
       </div>
       <div className="comment_div">
-        <img
-          className="tof_comment"
-          src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
-        />
+        <img className="tof_comment" src={user.photo} />
         <div className="tarea">
           <textarea
             className="text_comment"
@@ -478,10 +612,12 @@ function Home(props) {
             </div>
 
             <div className="comment_buttons">
-              <button className="btn_like">
+              <button className="btn_like"         onClick={(e) => {
+            handleCommentLikesClick(e,comment._id,comment.likes);
+          }}>
                 <i className="far fa-heart"></i> Like
               </button>
-              <p className="post_date">{comment.likes} likes</p>
+              <p className="post_date">{comment.likes.length} likes</p>
             </div>
           </div>
         ))}
@@ -499,7 +635,14 @@ function Home(props) {
             <div className="follow_info">
               <img className="follow_img" src={element.photo} />
               <div>
-                <h5 className="follow_name">{element.name}</h5>
+                <h5
+                  className="follow_name"
+                  onClick={() => {
+                    pushUserClick(element._id);
+                  }}
+                >
+                  {element.name}
+                </h5>
                 <p className="follow_numbers">
                   {element.followers.length}followers
                 </p>
@@ -522,14 +665,18 @@ function Home(props) {
       <div style={{ background: "white" }} className="trends">
         <h5 className="tweet_title">Trends for you</h5>
         <hr />
-        <div className="trends_div">
-          <h5 className="trends_title"># developers</h5>
-          <p className="post_date">44 followers</p>
-        </div>
-        <div>
-          <h5 className="trends_title"># developers</h5>
-          <p className="post_date">44 followers</p>
-        </div>
+        {allUsers.map((element, i) => (
+          <div
+            key={i}
+            className="trends_div"
+            onClick={() => {
+              pushUserClick(element._id);
+            }}
+          >
+            <h5 className="trends_title">#{element.name}</h5>
+            <p className="post_date">{element.followers.length}followers</p>
+          </div>
+        ))}
       </div>
       {/* home posts */}
       <div className="home_posts">{onePost}</div>

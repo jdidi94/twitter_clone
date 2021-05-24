@@ -12,8 +12,114 @@ function Profile(props) {
   const [following, setfollowing] = useState("");
   const [submit, setload] = useState(false);
   const [comment, createComment] = useState("");
-  const [photo, createPhoto] = useState("");
+
   const [photoComment, setphotoComment] = useState("");
+  const [color, setColor] = useState(false);
+  const [replies, setReplies] = useState([]);
+  const [sortReplies, setSortReplies] = useState("false");
+
+  const [media, setMedia] = useState([]);
+  const [sortMedia, setSortMedia] = useState(false);
+  const [likes, setLikes] = useState([]);
+  const [sortLikes, setSortLikes] = useState(false);
+  // tweets replies
+  const handletweetclick = () => {
+    setload(!submit);
+  };
+  //replies sort
+  const handlerepliesClick = () => {
+    const post = [];
+    posts.map((element) => {
+      element.comments.map((comment) => {
+        if (comment.comment !== "") {
+          post.push(element);
+        }
+      });
+    });
+
+    setReplies(post);
+    setSortReplies(!sortReplies);
+    console.log(replies);
+  };
+  useEffect(() => {
+    setPosts(replies);
+  }, [sortReplies]);
+
+  //media sort
+  const handleMediaClick = () => {
+    const post = [];
+    posts.map((element) => {
+      element.comments.map((comment) => {
+        if (comment.userPhoto !== "") {
+          post.push(element);
+        }
+      });
+    });
+    setMedia(post);
+    setSortMedia(!sortMedia);
+  };
+  useEffect(() => {
+    setPosts(media);
+  }, [sortMedia]);
+
+  //likes sort
+  useEffect(() => {
+    setPosts(likes);
+  }, [sortLikes]);
+  const handleLikeClick = () => {
+    setLikes(
+      posts.sort((a, b) =>
+        a.likesNumber < b.likesNumber
+          ? 11
+          : a.likesNumber === b.likesNumber
+          ? a.post > b.post
+            ? 1
+            : -1
+          : -1
+      )
+    );
+    setSortLikes(!sortLikes);
+  };
+
+  const saveState = () => {
+    posts.map((element) => {
+      if (element.saved.includes(state.user._id)) {
+        const attribute = document.getElementById(element._id + "save");
+        ReactDOM.findDOMNode(attribute).style.color = "blue";
+      } else {
+        const attribute = document.getElementById(element._id + "save");
+        ReactDOM.findDOMNode(attribute).style.color = "black";
+      }
+    });
+  };
+  const likesState = () => {
+    posts.map((element) => {
+      if (element.likes.includes(state.user._id)) {
+        const attribute = document.getElementById(element._id + "like");
+        ReactDOM.findDOMNode(attribute).style.color = "pink";
+      } else {
+        const attribute = document.getElementById(element._id + "like");
+        ReactDOM.findDOMNode(attribute).style.color = "black";
+      }
+    });
+  };
+  const retweetsState = () => {
+    posts.map((element) => {
+      if (element.retweets.includes(state.user._id)) {
+        const attribute = document.getElementById(element._id + "retweet");
+        ReactDOM.findDOMNode(attribute).style.color = "green";
+      } else {
+        const attribute = document.getElementById(element._id + "retweet");
+        ReactDOM.findDOMNode(attribute).style.color = "black";
+      }
+    });
+  };
+  useEffect(() => {
+    saveState();
+    likesState();
+    retweetsState();
+  }, [color]);
+
   const currentDateTime = (date) => {
     const dateNow = moment();
 
@@ -46,10 +152,11 @@ function Profile(props) {
   };
   const getPosts = () => {
     axios
-      .get(`http://localhost:4000/api/post/${state.id}`)
+      .get(`http://localhost:4000/api/post/user/${state.id}`)
       .then(({ data }) => {
         console.log("here your post", data);
         setPosts(data);
+        setColor(!color);
       })
 
       .catch((err) => {
@@ -93,6 +200,10 @@ function Profile(props) {
         message: true,
         likes: state.user._id,
       };
+      const data2 = {
+        message: true,
+        likes: id,
+      };
       axios
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
         .then(({ data }) => {
@@ -103,9 +214,13 @@ function Profile(props) {
         })
         .then(() => {
           axios
-            .patch(`http://localhost:4000/api/user/likes/${state.user._id}`, data)
+            .patch(
+              `http://localhost:4000/api/user/likes/${state.user._id}`,
+              data2
+            )
             .then(({ data }) => {
               console.log(data);
+              setload(!submit);
             })
             .catch((err) => {
               console.log(err);
@@ -119,6 +234,11 @@ function Profile(props) {
         message: false,
         likes: state.user._id,
       };
+      const data2 = {
+        message: false,
+        likes: id,
+      };
+      console.log("here like posts ", data);
       axios
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
         .then(({ data }) => {
@@ -129,9 +249,13 @@ function Profile(props) {
         })
         .then(() => {
           axios
-            .patch(`http://localhost:4000/api/user/likes/${state.user._id}`, data)
+            .patch(
+              `http://localhost:4000/api/user/likes/${state.user._id}`,
+              data2
+            )
             .then(({ data }) => {
               console.log(data);
+              setload(!submit);
             })
             .catch((err) => {
               console.log(err);
@@ -157,7 +281,6 @@ function Profile(props) {
       .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
       .then(({ data }) => {
         console.log(data);
-        
       })
       .catch((err) => {
         console.log(err);
@@ -166,8 +289,8 @@ function Profile(props) {
         axios
           .post(`http://localhost:4000/api/post/`, data1)
           .then(({ data }) => {
-        
-            console.log("posted done",data);
+            setload(!submit);
+            console.log("posted done", data);
           })
           .catch((err) => {
             console.log(err);
@@ -187,6 +310,10 @@ function Profile(props) {
         message: true,
         saved: state.user._id,
       };
+      const data2 = {
+        message: true,
+        saved: id,
+      };
       axios
         .patch(`http://localhost:4000/api/post/saved/${id}`, data)
         .then(({ data }) => {
@@ -197,9 +324,13 @@ function Profile(props) {
         })
         .then(() => {
           axios
-            .patch(`http://localhost:4000/api/user/saved/${state.user._id}`, data)
+            .patch(
+              `http://localhost:4000/api/user/saved/${state.user._id}`,
+              data2
+            )
             .then(({ data }) => {
               console.log(data);
+              setload(!submit);
             })
             .catch((err) => {
               console.log(err);
@@ -212,6 +343,10 @@ function Profile(props) {
         message: false,
         saved: state.user._id,
       };
+      const data2 = {
+        message: false,
+        saved: id,
+      };
       axios
         .patch(`http://localhost:4000/api/post/saved/${id}`, data)
         .then(({ data }) => {
@@ -222,9 +357,13 @@ function Profile(props) {
         })
         .then(() => {
           axios
-            .patch(`http://localhost:4000/api/user/saved/${state.user._id}`, data)
+            .patch(
+              `http://localhost:4000/api/user/saved/${state.user._id}`,
+              data2
+            )
             .then(({ data }) => {
               console.log(data);
+              setload(!submit);
             })
             .catch((err) => {
               console.log(err);
@@ -238,7 +377,7 @@ function Profile(props) {
     // let element = document.getElementById(id + "save");
     // ReactDOM.findDOMNode(element).style.color = "blue";
 
-    if (!user.following.includes(state.user._id)) {
+    if (!user.followers.includes(state.user._id)) {
       const data1 = {
         message: true,
         followers: state.user._id,
@@ -255,9 +394,7 @@ function Profile(props) {
         .then(({ data }) => {
           console.log(data);
         })
-        .catch((err) => {
-          console.log(err);
-        })
+
         .then(() => {
           axios
             .patch(
@@ -267,14 +404,12 @@ function Profile(props) {
             .then(({ data }) => {
               console.log(data);
               setload(!submit);
-            })
-            .catch((err) => {
-              console.log(err);
             });
         });
-    } else if (user.following.includes(user._id)) {
+    } else {
       // let element = document.getElementById(id + "save");
       // ReactDOM.findDOMNode(element).style.color = "black";
+      console.log("hiii");
       const data1 = {
         message: false,
         followers: state.user._id,
@@ -291,9 +426,7 @@ function Profile(props) {
         .then(({ data }) => {
           console.log(data);
         })
-        .catch((err) => {
-          console.log(err);
-        })
+
         .then(() => {
           axios
             .patch(
@@ -303,9 +436,6 @@ function Profile(props) {
             .then(({ data }) => {
               console.log(data);
               setload(!submit);
-            })
-            .catch((err) => {
-              console.log(err);
             });
         });
     }
@@ -345,7 +475,6 @@ function Profile(props) {
       });
   };
 
-
   return (
     <div className="profile_container">
       <div className="all_info">
@@ -372,9 +501,16 @@ function Profile(props) {
               <h5 className="name_info">{user.name}</h5>
               <p className="follow_numbers">{followers} followers</p>
               <p className="follow_numbers">{following} following</p>
-              <button className="follow_button" onClick={handleTClickFollowing}>
-                <i class="fas fa-user-plus"></i> Follow
-              </button>
+              {state.id !== state.user._id ? (
+                <button
+                  className="follow_button"
+                  onClick={handleTClickFollowing}
+                >
+                  <i class="fas fa-user-plus"></i> Follow
+                </button>
+              ) : (
+                <div></div>
+              )}
             </div>
             <div className="paragraph_div">
               <p className="post_paragraph"> {user.bio}</p>
@@ -386,10 +522,18 @@ function Profile(props) {
       <div className="Bookmark_container">
         {/* filter  */}
         <div style={{ background: "white" }} className="filter_container">
-          <button className="filter_item">Tweets</button>
-          <button className="filter_item">Tweets & replies</button>
-          <button className="filter_item">Media</button>
-          <button className="filter_item">Likes</button>
+          <button className="filter_item" onClick={handletweetclick}>
+            Tweets
+          </button>
+          <button className="filter_item" onClick={handlerepliesClick}>
+            Tweets & replies
+          </button>
+          <button className="filter_item" onClick={handleMediaClick}>
+            Media
+          </button>
+          <button className="filter_item" onClick={handleLikeClick}>
+            Likes
+          </button>
         </div>
         {/* posts */}
         <div className="post_profile_container">
@@ -421,65 +565,73 @@ function Profile(props) {
                 <button className="btn_button">
                   <i className="fab fa-rocketchat"></i> comment
                 </button>
-                <button className="btn_button"         onClick={(e) => {
-            handleTweetsClick(element._id, e, element.post, element.photo);
-          }}
-          id={element._id + "retweet"}
-        >
+                <button
+                  className="btn_button"
+                  onClick={(e) => {
+                    handleTweetsClick(
+                      element._id,
+                      e,
+                      element.post,
+                      element.photo
+                    );
+                  }}
+                  id={element._id + "retweet"}
+                >
                   <i className="fa fa-retweet"></i> Retweet
                 </button>
-                <button className="btn_button"          onClick={(e) => {
-             handleLikesClick(element._id, element.likes, e);
-          }}
-          id={element._id + "like"}>
+                <button
+                  className="btn_button"
+                  onClick={(e) => {
+                    handleLikesClick(element._id, element.likes, e);
+                  }}
+                  id={element._id + "like"}
+                >
                   <i className="far fa-heart"></i> Like
                 </button>
-                <button className="btn_button"
-                     onClick={(e) => {
-                      handleTClickSaved(element._id, element.saved, e);
-                    }}
-                    id={element._id + "save"}>
+                <button
+                  className="btn_button"
+                  onClick={(e) => {
+                    handleTClickSaved(element._id, element.saved, e);
+                  }}
+                  id={element._id + "save"}
+                >
                   <i className="far fa-bookmark"></i> Save{" "}
                 </button>
               </div>
               <div className="comment_div">
-          <img
-          className="tof_comment"
-          src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
-        />
-        <div className="tarea">
-          <textarea
-            className="text_comment"
-            placeholder="write a comment"
-            name={element._id}
-            onChange={handleCommentChange}
-          ></textarea>
-          <div className="image-upload">
-            <label htmlFor="files">
-              <i
-                className="far fa-image"
-                style={{ fontSize: "40px", color: "grey" }}
-              ></i>
-            </label>
+                <img className="tof_comment" src={state.user.photo} />
+                <div className="tarea">
+                  <textarea
+                    className="text_comment"
+                    placeholder="write a comment"
+                    name={element._id}
+                    onChange={handleCommentChange}
+                  ></textarea>
+                  <div className="image-upload">
+                    <label htmlFor="files">
+                      <i
+                        className="far fa-image"
+                        style={{ fontSize: "40px", color: "grey" }}
+                      ></i>
+                    </label>
 
-            <input
-              id="files"
-              type="file"
-              onChange={(event) => uploadImageComment(event)}
-            />
-          </div>
-        </div>
-        <button
-          className="btn_button"
-          onClick={(e) => {
-            handleClickComment(e, element._id);
-          }}
-        >
-          Save
-        </button>
-        </div>
+                    <input
+                      id="files"
+                      type="file"
+                      onChange={(event) => uploadImageComment(event)}
+                    />
+                  </div>
+                </div>
+                <button
+                  className="btn_button"
+                  onClick={(e) => {
+                    handleClickComment(e, element._id);
+                  }}
+                >
+                  Save
+                </button>
+              </div>
 
-        
               <hr />
               <div className="all_comments">
                 {element.comments.map((comment) => (
@@ -493,7 +645,6 @@ function Profile(props) {
                           <p className="comment_date">
                             {currentDateTime(comment.createdAt)}
                           </p>
-
                         </div>
                         <p className="comment_paragraph">{comment.comment}</p>
                         {comment.photoComment ? (
