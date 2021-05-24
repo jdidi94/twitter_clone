@@ -4,7 +4,6 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import swal from "sweetalert";
 
-
 function Login(props) {
   const [loginInput, setLoginInput] = useState({
     email: "",
@@ -33,8 +32,7 @@ function Login(props) {
     } else {
       axios
         .post("http://localhost:4000/api/user/login", loginInput)
-        .then(( res ) => {
-          console.log("ressss",res)
+        .then((res) => {
           if (res.data.message === "wrong password") {
             swal("Oops!", "Wrong Password!", "error");
           } else if (res.data.message === "user not found") {
@@ -42,8 +40,9 @@ function Login(props) {
           } else {
             const token = res.data.token;
             localStorage.setItem("token", token);
-         
+
             props.history.push("/edit");
+            swal("Welcome!", " You are log in !");
           }
         })
         .catch((err) => {
@@ -75,15 +74,12 @@ function Login(props) {
     } else {
       axios
         .post("http://localhost:4000/api/user/signup", registerInput)
-        .then(( res ) => {
-          console.log("hre the register", res.data.token)
-           const token = res.data.token;
+        .then((res) => {
+          const token = res.data.token;
           localStorage.setItem("token", token);
+
           props.history.push("/edit");
           swal("Welcome!", " You are log in !");
- 
-  
-   
         })
         .catch((err) => {
           console.log(err);

@@ -2,6 +2,8 @@
 
   background-image: linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%);
 font-family: 'Newsreader', serif;
+height: 100%;
+width: 100%;
 
 }
 .body{
@@ -80,16 +82,17 @@ nav ul li .nav_routes {
   background: white;
 }
 .dropdown {
-  
+  z-index: 1;
   float: right;
-  margin: 15px 0px;
+  margin-right: 50px;
+  /* margin-top:13px ; */
 }
 .dropdown-content {
   font-size: 15px;
   display: none;
   position: absolute;
   background-color: #f9f9f9;
-  min-width: 150px;
+  min-width: 140px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   border-radius: 20px;
@@ -98,27 +101,34 @@ nav ul li .nav_routes {
 .dropdown-content .routes {
 
   text-decoration: none;
-  display: block;
+
+  opacity: 1;
 }
 .icon {
+  
   padding-bottom: 2px;
   display:flex;
   justify-content: center;
   align-items: center;
   gap:10px;
+  color:grey;
+  cursor: pointer;
 }
-.dropdown-content :hover {
-  background-color: rgb(192, 184, 184);
+.dropdown-content:hover {
+
+  text-decoration: none;
+  border-radius: 5px;
+
+}
+.icon:hover{
+  text-decoration: none;
+  background-color:black
+
 }
 .dropdown:hover .dropdown-content {
   display: block;
-
- 
-
 }
-.dropdown .dropbtn .dropdown-content :hover {
-  background-color: rgb(112, 107, 107);
-}
+
 .photo {
   width: 40px;
   height: 40px;

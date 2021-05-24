@@ -37,7 +37,7 @@ function Bookmark(props) {
 
      setReplies(post)
      setSortReplies(!sortReplies)
-     console.log(replies)
+  
   }
   useEffect(() => {
     setPosts(replies)
@@ -93,7 +93,7 @@ function Bookmark(props) {
     });
   };
   const retweetsState = () => {
-    console.log("hiiiiii");    getPosts.map((element) => {
+   getPosts.map((element) => {
  
       if (element.retweets.includes(user._id)) {
         const attribute = document.getElementById(element._id + "retweet");
@@ -128,7 +128,7 @@ function Bookmark(props) {
     axios
       .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
-        console.log("here", data);
+
         setUser(data);
       })
       .catch((err) => {
@@ -136,11 +136,11 @@ function Bookmark(props) {
       });
   };
   const getAllPosts = () => {
-    console.log(user._id);
+
     axios
       .get(`http://localhost:4000/api/post/bookmarks/${user._id}`)
       .then(({ data }) => {
-        console.log("here all post", data);
+
         setPosts(data);
         setColor(!color);
       });
@@ -157,12 +157,11 @@ function Bookmark(props) {
     const image = new FormData();
     image.append("file", event.target.files[0]);
     image.append("upload_preset", "tyfhc3lt");
-    console.log("photo", event.target.files[0]);
+
     axios
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setphotoComment(data.url);
-        console.log("this is the photo uploaded", data);
       })
       .catch((err) => {
         console.log(err);
@@ -174,7 +173,7 @@ function Bookmark(props) {
   };
   const handleClickComment = (e, id) => {
     e.preventDefault();
-    console.log("user.photo", user.photo);
+
 
     const comments = [];
     const data = {
@@ -188,17 +187,17 @@ function Bookmark(props) {
     axios
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
-        console.log("this is the comment id ", data);
+   
 
         comments.push(data._id);
       })
       .then(() => {
-        console.log(comments);
+
 
         axios
           .patch(`http://localhost:4000/api/post/${id}`, { comments: comments })
           .then((data) => {
-            console.log(data);
+       
           });
       })
       .catch((err) => {
@@ -223,7 +222,7 @@ function Bookmark(props) {
       axios
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
         .then(({ data }) => {
-          console.log(data);
+        
         })
         .catch((err) => {
           console.log(err);
@@ -232,7 +231,7 @@ function Bookmark(props) {
           axios
             .patch(`http://localhost:4000/api/user/likes/${user._id}`, data2)
             .then(({ data }) => {
-              console.log(data);
+     
               setSubmit(!submit);
             })
             .catch((err) => {
@@ -252,8 +251,8 @@ function Bookmark(props) {
       };
       axios
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
-        .then(({ data }) => {
-          console.log(data);
+        .then(() => {
+         
         })
         .catch((err) => {
           console.log(err);
@@ -262,7 +261,7 @@ function Bookmark(props) {
           axios
             .patch(`http://localhost:4000/api/user/likes/${user._id}`, data2)
             .then(({ data }) => {
-              console.log(data);
+      
               setSubmit(!submit);
             })
             .catch((err) => {
@@ -288,7 +287,7 @@ function Bookmark(props) {
     axios
       .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
       .then(({ data }) => {
-        console.log(data);
+      
       })
       .catch((err) => {
         console.log(err);
@@ -297,7 +296,7 @@ function Bookmark(props) {
         axios
           .post(`http://localhost:4000/api/post/`, data1)
           .then(({ data }) => {
-            console.log("posted done", data);
+   
             setSubmit(!submit);
           })
           .catch((err) => {
@@ -324,7 +323,6 @@ function Bookmark(props) {
       axios
         .patch(`http://localhost:4000/api/post/saved/${id}`, data)
         .then(({ data }) => {
-          console.log(data);
         })
         .catch((err) => {
           console.log(err);
@@ -333,7 +331,7 @@ function Bookmark(props) {
           axios
             .patch(`http://localhost:4000/api/user/saved/${user._id}`, data2)
             .then(({ data }) => {
-              console.log(data);
+         
               setSubmit(!submit);
             })
             .catch((err) => {
@@ -354,7 +352,7 @@ function Bookmark(props) {
       axios
         .patch(`http://localhost:4000/api/post/saved/${id}`, data)
         .then(({ data }) => {
-          console.log(data);
+ 
         })
         .catch((err) => {
           console.log(err);
@@ -363,7 +361,7 @@ function Bookmark(props) {
           axios
             .patch(`http://localhost:4000/api/user/saved/${user._id}`, data2)
             .then(({ data }) => {
-              console.log(data);
+          
               setSubmit(!submit);
             })
             .catch((err) => {
@@ -378,6 +376,41 @@ function Bookmark(props) {
       state: { id: id, user: user }, // your data array of objects
     });
   };
+  const handleCommentLikesClick = (e, id, element) => {
+    e.preventDefault();
+
+    if (!element.includes(user._id)) {
+      const data = {
+        likes: user._id,
+        message: true,
+      };
+
+      axios
+        .patch(`http://localhost:4000/api/comment/${id}`, data)
+        .then(({ data }) => {
+
+          setSubmit(!submit);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      const data = {
+        likes: user._id,
+        message: false,
+      };
+      axios
+        .patch(`http://localhost:4000/api/comment/${id}`, data)
+        .then(({ data }) => {
+    
+          setSubmit(!submit);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   return (
     <div className="Bookmark_container">
       {/* filter  */}
@@ -531,10 +564,16 @@ function Bookmark(props) {
                   </div>
 
                   <div className="comment_buttons">
-                    <button className="btn_like">
+                    <button className="btn_like"         onClick={(e) => {
+                  handleCommentLikesClick(
+                    e,
+                    comment._id,
+                    comment.Commentslikes
+                  );
+                }}>
                       <i className="far fa-heart"></i> Like
                     </button>
-                    <p className="post_date">553 retweets</p>
+                    <p className="post_date">{comment.Commentslikes.length} retweets</p>
                   </div>
                 </div>
               ))}

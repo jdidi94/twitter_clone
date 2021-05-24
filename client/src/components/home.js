@@ -3,6 +3,8 @@ import "./home.css";
 import axios from "axios";
 import ReactDOM from "react-dom";
 import moment from "moment";
+import swal from "sweetalert";
+
 function Home(props) {
   const [allUsers, setUsers] = useState([]);
   const [post, createPost] = useState("");
@@ -18,7 +20,7 @@ function Home(props) {
   const [userTrends, setTrends] = useState([]);
   const saveState = () => {
     getPosts.map((element) => {
-      console.log("element", element);
+     
       if (element.saved.includes(user._id)) {
         const attribute = document.getElementById(element._id + "save");
         ReactDOM.findDOMNode(attribute).style.color = "blue";
@@ -40,9 +42,9 @@ function Home(props) {
     });
   };
   const retweetsState = () => {
-    console.log("hiiiiii");
+
     getPosts.map((element) => {
-      console.log("element", element);
+ 
       if (element.retweets.includes(user._id)) {
         const attribute = document.getElementById(element._id + "retweet");
         ReactDOM.findDOMNode(attribute).style.color = "green";
@@ -87,8 +89,8 @@ function Home(props) {
     axios
       .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
-        // console.log("USERBEFORE", this.user);
-        console.log("here", data);
+
+     
         setUser(data);
 
         setfollowers(filterFollowers(data.followers, data.following));
@@ -112,7 +114,7 @@ function Home(props) {
     axios
       .get(`http://localhost:4000/api/post/user/follower/${user._id}`)
       .then((data) => {
-        console.log("here all post", data.data);
+ 
         setPosts(data.data);
       });
   };
@@ -121,7 +123,7 @@ function Home(props) {
     axios
       .get("http://localhost:4000/api/user/users")
       .then(({ data }) => {
-        // console.log("USERBEFORE", this.user);
+
         setUsers(filterTrends(data));
       })
       .catch((err) => {
@@ -140,12 +142,12 @@ function Home(props) {
     const image = new FormData();
     image.append("file", event.target.files[0]);
     image.append("upload_preset", "tyfhc3lt");
-    console.log("photo", event.target.files[0]);
+
     axios
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         createPhoto(data.url);
-        console.log("this is the photo uploaded", data);
+
       })
       .catch((err) => {
         console.log(err);
@@ -157,12 +159,12 @@ function Home(props) {
     const image = new FormData();
     image.append("file", event.target.files[0]);
     image.append("upload_preset", "tyfhc3lt");
-    console.log("photo", event.target.files[0]);
+
     axios
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setphotoComment(data.url);
-        console.log("this is the photo uploaded", data);
+
       })
       .catch((err) => {
         console.log(err);
@@ -178,7 +180,7 @@ function Home(props) {
   };
   const handleClickComment = (e, id) => {
     e.preventDefault();
-    console.log("user.photo", user.photo);
+
 
     const comments = [];
     const data = {
@@ -192,13 +194,13 @@ function Home(props) {
     axios
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
-        console.log("this is the comment id ", data);
+        
 
         comments.push(data._id);
         setSubmit(!submit);
       })
       .then(() => {
-        console.log(comments);
+
 
         axios
           .patch(`http://localhost:4000/api/post/${id}`, { comments: comments })
@@ -228,8 +230,9 @@ function Home(props) {
     axios
       .post("http://localhost:4000/api/post/", data)
       .then((res) => {
-        console.log("your data is posted", res);
+     
         setSubmit(!submit);
+        swal("Done!", " your tweets is setted ,go and check in explore !");
       })
       .catch((err) => {
         console.log(err);
@@ -449,15 +452,15 @@ function Home(props) {
         });
     }
   };
-  const handleCommentLikesClick = (e,id,element) => {
+  const handleCommentLikesClick = (e, id, element) => {
     e.preventDefault();
 
-    if(!element.includes(user._id)){
+    if (!element.includes(user._id)) {
       const data = {
         likes: user._id,
-        message:true
+        message: true,
       };
-  
+
       axios
         .patch(`http://localhost:4000/api/comment/${id}`, data)
         .then(({ data }) => {
@@ -466,25 +469,22 @@ function Home(props) {
         })
         .catch((err) => {
           console.log(err);
-        })
-    }else{
+        });
+    } else {
       const data = {
         likes: user._id,
-        message:false
+        message: false,
       };
-          axios
-            .post(`http://localhost:4000/api/comment/${id}`, data)
-            .then(({ data }) => {
-              console.log("posted done", data);
-              setSubmit(!submit);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-  
+      axios
+        .patch(`http://localhost:4000/api/comment/${id}`, data)
+        .then(({ data }) => {
+          console.log("posted done", data);
+          setSubmit(!submit);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-
-
   };
 
   // home post mapping
@@ -612,12 +612,20 @@ function Home(props) {
             </div>
 
             <div className="comment_buttons">
-              <button className="btn_like"         onClick={(e) => {
-            handleCommentLikesClick(e,comment._id,comment.likes);
-          }}>
+              <button
+                className="btn_like"
+                onClick={(e) => {
+                  handleCommentLikesClick(
+                    e,
+                    comment._id,
+                    comment.Commentslikes
+                  );
+                }}
+              >
                 <i className="far fa-heart"></i> Like
               </button>
-              <p className="post_date">{comment.likes.length} likes</p>
+
+              <p className="post_date">{comment.Commentslikes.length} likes</p>
             </div>
           </div>
         ))}
@@ -658,6 +666,7 @@ function Home(props) {
             </div>
             <p className="follow_paragraph"> {element.bio}</p>
             <img className="big_img" src={element.cover} />
+            <hr />
           </div>
         ))}
       </div>
@@ -687,10 +696,21 @@ function Home(props) {
         <hr />
 
         <div className="new_tweets_container">
-          <img
+          { user.photo?
+          (
+            <img
             className="photo_new_tweets"
-            src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
+            src={user.photo}
           />
+          ):(
+
+            <img
+              className="photo_new_tweets"
+              src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
+            />
+          )
+
+          }
           <textarea
             onChange={handlePostChange}
             name="post"

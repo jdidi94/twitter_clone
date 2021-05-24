@@ -21,14 +21,14 @@ exports.updateLikes = async function (req, res) {
     if (req.body.message === true) {
       const likes = await Comment.updateOne(
         { _id: req.params.id },
-        { $addToSet: { likes: req.body.likes }}
+        { $addToSet: { Commentslikes: req.body.likes }}
 
       );
-      res.send("your likes are increased");
+      res.send("your likes comments are increased");
     } else {
       const likes = await Comment.updateOne(
         { _id: req.params.id },
-        { $pull: { likes: req.body.likes }
+        { $pull: { Commentslikes: req.body.likes }
          }
       );
       res.send("it's removed");

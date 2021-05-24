@@ -79,7 +79,7 @@ function Explore(props) {
       .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
         // console.log("USERBEFORE", this.user);
-        console.log("here", data);
+     
         setUser(data);
 
       })
@@ -89,7 +89,7 @@ function Explore(props) {
   };
   const getAllPosts = () => {
     axios.get("http://localhost:4000/api/post/").then(({ data }) => {
-      console.log("here all post", data);
+      
       setPosts(data);
       setColor(!color);
     });
@@ -103,12 +103,12 @@ function Explore(props) {
     const image = new FormData();
     image.append("file", event.target.files[0]);
     image.append("upload_preset", "tyfhc3lt");
-    console.log("photo", event.target.files[0]);
+
     axios
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setphotoComment(data.url);
-        console.log("this is the photo uploaded", data);
+    
       })
       .catch((err) => {
         console.log(err);
@@ -133,7 +133,7 @@ function Explore(props) {
 
   const handleClickComment = (e, id) => {
     e.preventDefault();
-    console.log("user.photo", user.photo);
+
 
     const comments = [];
     const data = {
@@ -147,12 +147,12 @@ function Explore(props) {
     axios
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
-        console.log("this is the comment id ", data);
+     
 
         comments.push(data._id);
       })
       .then(() => {
-        console.log(comments);
+    
 
         axios
           .patch(`http://localhost:4000/api/post/${id}`, { comments: comments })
@@ -298,7 +298,7 @@ function Explore(props) {
         axios
           .post(`http://localhost:4000/api/post/`, data1)
           .then(({ data }) => {
-            console.log("posted done", data);
+      
             setSubmit(!submit);
           })
           .catch((err) => {
@@ -381,6 +381,41 @@ function Explore(props) {
       state: { id: id, user: user }, // your data array of objects
     });
   };
+  const handleCommentLikesClick = (e, id, element) => {
+    e.preventDefault();
+
+    if (!element.includes(user._id)) {
+      const data = {
+        likes: user._id,
+        message: true,
+      };
+
+      axios
+        .patch(`http://localhost:4000/api/comment/${id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+          setSubmit(!submit);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      const data = {
+        likes: user._id,
+        message: false,
+      };
+      axios
+        .patch(`http://localhost:4000/api/comment/${id}`, data)
+        .then(({ data }) => {
+          console.log("posted done", data);
+          setSubmit(!submit);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   return (
     <div className="explore_container">
       {/* filter  */}
@@ -540,10 +575,16 @@ function Explore(props) {
                   </div>
 
                   <div className="comment_buttons">
-                    <button className="btn_like">
+                    <button className="btn_like"        onClick={(e) => {
+                  handleCommentLikesClick(
+                    e,
+                    comment._id,
+                    comment.Commentslikes
+                  );
+                }}>
                       <i className="far fa-heart"></i> Like
                     </button>
-                    <p className="post_date">553 retweets</p>
+                    <p className="post_date">{comment.Commentslikes.length} retweets</p>
                   </div>
                 </div>
               ))}

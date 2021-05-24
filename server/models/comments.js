@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 var CommentSchema = new mongoose.Schema({
+        Commentslikes:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
       userPhoto:{
           type:String
       },

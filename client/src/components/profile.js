@@ -138,12 +138,12 @@ function Profile(props) {
     axios
       .get(`http://localhost:4000/api/user/getUser/${state.id}`)
       .then(({ data }) => {
-        // console.log("USERBEFORE", this.user);
-        console.log("profile user", data);
+
+       
 
         setUser(data);
         setfollowers(data.followers.length);
-        console.log("");
+
         setfollowing(data.following.length);
       })
       .catch((err) => {
@@ -154,7 +154,7 @@ function Profile(props) {
     axios
       .get(`http://localhost:4000/api/post/user/${state.id}`)
       .then(({ data }) => {
-        console.log("here your post", data);
+       
         setPosts(data);
         setColor(!color);
       })
@@ -173,12 +173,12 @@ function Profile(props) {
     const image = new FormData();
     image.append("file", event.target.files[0]);
     image.append("upload_preset", "tyfhc3lt");
-    console.log("photo", event.target.files[0]);
+
     axios
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setphotoComment(data.url);
-        console.log("this is the photo uploaded", data);
+ 
       })
       .catch((err) => {
         console.log(err);
@@ -238,7 +238,7 @@ function Profile(props) {
         message: false,
         likes: id,
       };
-      console.log("here like posts ", data);
+
       axios
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
         .then(({ data }) => {
@@ -442,7 +442,7 @@ function Profile(props) {
   };
   const handleClickComment = (e, id) => {
     e.preventDefault();
-    console.log("user.photo", user.photo);
+
 
     const comments = [];
     const data = {
@@ -456,12 +456,12 @@ function Profile(props) {
     axios
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
-        console.log("this is the comment id ", data);
+    
 
         comments.push(data._id);
       })
       .then(() => {
-        console.log(comments);
+
 
         axios
           .patch(`http://localhost:4000/api/post/${id}`, { comments: comments })
@@ -473,6 +473,40 @@ function Profile(props) {
       .catch((err) => {
         console.log(err);
       });
+  };
+  const handleCommentLikesClick = (e, id, element) => {
+    e.preventDefault();
+
+    if (!element.includes(user._id)) {
+      const data = {
+        likes: state.user._id,
+        message: true,
+      };
+
+      axios
+        .patch(`http://localhost:4000/api/comment/${id}`, data)
+        .then(({ data }) => {
+          console.log(data);
+          setload(!submit);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      const data = {
+        likes: state.user._id,
+        message: false,
+      };
+      axios
+        .patch(`http://localhost:4000/api/comment/${id}`, data)
+        .then(({ data }) => {
+          console.log("posted done", data);
+          setload(!submit);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   return (
@@ -661,10 +695,19 @@ function Profile(props) {
                     </div>
 
                     <div className="comment_buttons">
-                      <button className="btn_like">
+                      <button
+                        className="btn_like"
+                        onClick={(e) => {
+                          handleCommentLikesClick(
+                            e,
+                            comment._id,
+                            comment.Commentslikes
+                          );
+                        }}
+                      >
                         <i className="far fa-heart"></i> Like
                       </button>
-                      <p className="post_date">553 retweets</p>
+                      <p className="post_date">{comment.Commentslikes.length} retweets</p>
                     </div>
                   </div>
                 ))}

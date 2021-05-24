@@ -5,7 +5,7 @@ import swal from "sweetalert";
 function EditUser() {
   const [edit, setEdit] = useState(false);
   const [user, setUser] = useState({});
-  const [cover,setCover]=useState("")
+  const [cover, setCover] = useState("");
   const [Info, editInfo] = useState({
     name: "",
     password: "",
@@ -24,11 +24,9 @@ function EditUser() {
     axios
       .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
-        // console.log("USERBEFORE", this.user);
-        console.log("here", data);
         setUser(data);
-        setPhoto(data.photo)
-        setCover(data.cover)
+        setPhoto(data.photo);
+        setCover(data.cover);
       })
       .catch((err) => {
         console.log(err);
@@ -48,7 +46,6 @@ function EditUser() {
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setPhoto(data.url);
-        console.log("this is your photo", data.url);
       })
       .catch((err) => {
         console.log(err);
@@ -65,7 +62,6 @@ function EditUser() {
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setCover(data.url);
-        console.log("this is your photo", data.url);
       })
       .catch((err) => {
         console.log(err);
@@ -79,7 +75,7 @@ function EditUser() {
       email: Info.email,
       password: Info.password,
       photo: photo,
-      cover:cover
+      cover: cover,
     };
     console.log("userId", user._id);
     const has_special = /[!@#%*+=._-]/.test(Info.password);
@@ -106,10 +102,8 @@ function EditUser() {
         .patch(`http://localhost:4000/api/user/${user._id}`, data)
         .then(({ data }) => {
           swal("Welcome", "success");
-          console.log("the user changed", data);
 
           setSubmit(!submit);
-          console.log("submit", submit);
         });
     }
   };
@@ -183,48 +177,17 @@ function EditUser() {
                 changes will reflected in every services
               </p>
             </div>
-            {/* <div className="profile-div">
-              <img
-                className="img-div"
-                id="blah"
-                src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg "
-              />
-                     { sowPhoto===""
-                    ? (<img
-                        id="blah"
-                        src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
-                   />) : (<img
-                    id="blah"
-                    src={user.photo}
-                  />) 
 
-               }  
-              <div className="overlay">
-                <input
-                  id="imgInp"
-                  type="file"
-                  onChange={(event) => uploadImage(event)}
-                />
-                <p className="para-pic">Change Picture</p>
-              </div>
-            </div> */}
             <div className="image-up">
               <label htmlFor="imgInp">
-                {photo?(
-
+                {photo ? (
+                  <img id="blah" src={photo} />
+                ) : (
                   <img
                     id="blah"
-                    src={photo}
+                    src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
                   />
-                ):(
-              
-                  <img
-                  id="blah"
-                  src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
-                />
-                )
-
-                }
+                )}
               </label>
 
               <input
@@ -238,22 +201,14 @@ function EditUser() {
             </div>
             <div className="image-cover_div">
               <label htmlFor="img_cover">
-                {cover?
-                (
+                {cover ? (
+                  <img id="cover" src={cover} />
+                ) : (
                   <img
                     id="cover"
-                    src={cover}
+                    src="https://www.setaswall.com/wp-content/uploads/2017/06/Beutiful-Thought-FB-Cove-Pic-850-x-315-768x285.jpg"
                   />
-
-                ):(
-                  <img
-                  id="cover"
-                  src="https://www.setaswall.com/wp-content/uploads/2017/06/Beutiful-Thought-FB-Cove-Pic-850-x-315-768x285.jpg"
-                />
-                )
-                
-                
-                }
+                )}
               </label>
 
               <input
@@ -261,9 +216,8 @@ function EditUser() {
                 type="file"
                 onChange={(event) => uploadImageCover(event)}
               />
-           
-                <h6>change your cover photo</h6>
-      
+
+              <h6>change your cover photo</h6>
             </div>
             <form>
               <div className="edit">
