@@ -8,13 +8,15 @@
     "home_posts home_posts who_follow"
     "home_posts home_posts who_follow";
   flex-direction: column;
-  gap: 40px;
-  padding: 5% 0% 10% 15%;
+  gap: 10px;
+  padding: 5% 5% 5% 10%;
   /* grid-template-columns: repeat(12, [col-start] 1fr); */
+
+  
 }
 .trends {
   grid-area: trends;
-  width: auto;
+  width:300px;
   height: 350px;
   border-radius: 5px;
   padding: 30px 30px;
@@ -22,7 +24,7 @@
 .new_tweets {
   grid-area: new_tweets;
   width: 100%;
-  max-width: 650px;
+  max-width: 700px;
   max-height: 300px;
   border-radius: 10px;
   padding: 30px 30px;
@@ -31,7 +33,7 @@
   grid-area: home_posts;
   border-radius: 10px;
    display:grid;
-  max-width: 650px;
+  max-width: 700px;
   background: linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%);
 
   height:100%;
@@ -47,11 +49,12 @@
 .who_follow {
   grid-area: who_follow;
   border-radius: 10px;
+  width: 300px;
 
-  min-width: 250px;
   max-height: 400px;
   border-radius: 10px;
   padding: 30px 30px;
+  /* margin-left:10px; */
 
   
 }
@@ -77,6 +80,7 @@
   overflow: hidden;
   line-height: 0.7;
   padding: 10px 10px;
+  outline: none;
 }
 
 .photo_new_tweets {
@@ -98,21 +102,27 @@
 .btn-primary {
   background: none !important;
   border: none;
+  outline:none;
   padding: 0 !important;
 }
+
 .btn-secondary {
   margin-left: auto;
   order: 2;
   background-color: #1e90ff;
+  outline: none;
 }
 .btn-secondary:hover{ 
 color: #1e90ff;
+outline: none;
 }
 
 .dropdown-toggle {
   background: none !important;
   border: none;
   color: #1e90ff;
+  outline: none;
+
 }
 .btn_tof{
   width:30px;
@@ -218,6 +228,7 @@ color: #1e90ff;
   overflow: hidden;
   line-height: 0.7;
   padding: 10px 10px;
+  outline: none;
 }
 .text_comment ::placeholder {
   font-size: 15px;
@@ -375,4 +386,7 @@ line-height:1.2;
   
   color:#1e90ff;
   text-decoration: underline;
+}
+span{
+  margin-left:2px;
 }

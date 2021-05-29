@@ -40,8 +40,8 @@ function Login(props) {
           } else {
             const token = res.data.token;
             localStorage.setItem("token", token);
-
             props.history.push("/edit");
+            window.location.reload('/edit');
             swal("Welcome!", " You are log in !");
           }
         })
@@ -77,8 +77,9 @@ function Login(props) {
         .then((res) => {
           const token = res.data.token;
           localStorage.setItem("token", token);
-
-          props.history.push("/edit");
+          props.history.push(`/edit`)
+          window.location.reload('/edit');
+  
           swal("Welcome!", " You are log in !");
         })
         .catch((err) => {

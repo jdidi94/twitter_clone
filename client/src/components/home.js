@@ -5,6 +5,7 @@ import ReactDOM from "react-dom";
 import moment from "moment";
 import swal from "sweetalert";
 
+// import NavBar from "./navbar"
 function Home(props) {
   const [allUsers, setUsers] = useState([]);
   const [post, createPost] = useState("");
@@ -16,17 +17,35 @@ function Home(props) {
   const [submit, setSubmit] = useState("");
   const [photoComment, setphotoComment] = useState("");
   const [color, setColor] = useState(false);
+  const [commentsarr, setCommentArr] = useState([]);
   const [followersUser, setfollowers] = useState([]);
-  const [userTrends, setTrends] = useState([]);
+  const commentState = () => {
+    getPosts.map((element) => {
+      element.comments.map((comment) => {
+        if (comment.Commentslikes.includes(user._id)) {
+          const attribute = document.getElementById(comment._id + "comment");
+          ReactDOM.findDOMNode(attribute).style.color = "pink";
+          document.getElementById(comment._id + "span_comment").innerHTML =
+            "liked";
+        } else {
+          const attribute = document.getElementById(comment._id + "comment");
+          ReactDOM.findDOMNode(attribute).style.color = "black";
+          document.getElementById(comment._id + "span_comment").innerHTML =
+            "like";
+        }
+      });
+    });
+  };
   const saveState = () => {
     getPosts.map((element) => {
-     
       if (element.saved.includes(user._id)) {
         const attribute = document.getElementById(element._id + "save");
         ReactDOM.findDOMNode(attribute).style.color = "blue";
+        document.getElementById(element._id + "save_span").innerHTML = "saved";
       } else {
         const attribute = document.getElementById(element._id + "save");
         ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(element._id + "save_span").innerHTML = "save";
       }
     });
   };
@@ -35,22 +54,27 @@ function Home(props) {
       if (element.likes.includes(user._id)) {
         const attribute = document.getElementById(element._id + "like");
         ReactDOM.findDOMNode(attribute).style.color = "pink";
+        document.getElementById(element._id + "like_span").innerHTML = "liked";
       } else {
         const attribute = document.getElementById(element._id + "like");
         ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(element._id + "like_span").innerHTML = "like";
       }
     });
   };
   const retweetsState = () => {
-
+    console.log(getPosts);
     getPosts.map((element) => {
- 
       if (element.retweets.includes(user._id)) {
         const attribute = document.getElementById(element._id + "retweet");
         ReactDOM.findDOMNode(attribute).style.color = "green";
+        document.getElementById(element._id + "retweet_span").innerHTML =
+          "retweeted";
       } else {
         const attribute = document.getElementById(element._id + "retweet");
         ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(element._id + "retweet_span").innerHTML =
+          "retweet";
       }
     });
   };
@@ -58,6 +82,7 @@ function Home(props) {
     saveState();
     likesState();
     retweetsState();
+    commentState();
   }, [color]);
   const currentDateTime = (date) => {
     const dateNow = moment();
@@ -89,8 +114,6 @@ function Home(props) {
     axios
       .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
-
-     
         setUser(data);
 
         setfollowers(filterFollowers(data.followers, data.following));
@@ -113,9 +136,11 @@ function Home(props) {
   const getAllPosts = () => {
     axios
       .get(`http://localhost:4000/api/post/user/follower/${user._id}`)
-      .then((data) => {
- 
-        setPosts(data.data);
+      .then(({ data }) => {
+
+        setPosts(data.populate);
+        setCommentArr(data.posts);
+        setColor(!color);
       });
   };
 
@@ -123,7 +148,6 @@ function Home(props) {
     axios
       .get("http://localhost:4000/api/user/users")
       .then(({ data }) => {
-
         setUsers(filterTrends(data));
       })
       .catch((err) => {
@@ -147,7 +171,6 @@ function Home(props) {
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         createPhoto(data.url);
-
       })
       .catch((err) => {
         console.log(err);
@@ -164,7 +187,6 @@ function Home(props) {
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setphotoComment(data.url);
-
       })
       .catch((err) => {
         console.log(err);
@@ -181,7 +203,6 @@ function Home(props) {
   const handleClickComment = (e, id) => {
     e.preventDefault();
 
-
     const comments = [];
     const data = {
       userPhoto: user.photo,
@@ -194,14 +215,10 @@ function Home(props) {
     axios
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
-        
-
         comments.push(data._id);
         setSubmit(!submit);
       })
       .then(() => {
-
-
         axios
           .patch(`http://localhost:4000/api/post/${id}`, { comments: comments })
           .then((data) => {
@@ -230,7 +247,6 @@ function Home(props) {
     axios
       .post("http://localhost:4000/api/post/", data)
       .then((res) => {
-     
         setSubmit(!submit);
         swal("Done!", " your tweets is setted ,go and check in explore !");
       })
@@ -244,9 +260,6 @@ function Home(props) {
 
     setSubmit(!submit);
     if (!like.includes(user._id)) {
-      const element = document.getElementById(id + "like");
-      ReactDOM.findDOMNode(element).style.color = "red";
-
       const data = {
         message: true,
         likes: user._id,
@@ -275,8 +288,6 @@ function Home(props) {
             });
         });
     } else if (like.includes(user._id)) {
-      const element = document.getElementById(id + "like");
-      ReactDOM.findDOMNode(element).style.color = "black";
       const data2 = {
         message: false,
         likes: id,
@@ -321,8 +332,6 @@ function Home(props) {
       .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
       .then(({ data }) => {
         console.log(data);
-        const element = document.getElementById(id + "retweet");
-        ReactDOM.findDOMNode(element).style.color = "green";
       })
       .catch((err) => {
         console.log(err);
@@ -342,9 +351,6 @@ function Home(props) {
 
   const handleTClickSaved = (id, save, e) => {
     e.preventDefault();
-
-    let element = document.getElementById(id + "save");
-    ReactDOM.findDOMNode(element).style.color = "blue";
 
     if (!save.includes(user._id)) {
       const data = {
@@ -375,8 +381,6 @@ function Home(props) {
             });
         });
     } else if (save.includes(user._id)) {
-      let element = document.getElementById(id + "save");
-      ReactDOM.findDOMNode(element).style.color = "black";
       const data = {
         message: false,
         saved: user._id,
@@ -525,7 +529,8 @@ function Home(props) {
           }}
           id={element._id + "retweet"}
         >
-          <i className="fa fa-retweet"></i> Retweet
+          <i className="fa fa-retweet"></i>
+          <span id={element._id + "retweet_span"}>Retweet</span>
         </button>
         <button
           onClick={(e) => {
@@ -534,7 +539,8 @@ function Home(props) {
           id={element._id + "like"}
           className="btn_button"
         >
-          <i className="far fa-heart"></i> Like
+          <i className="far fa-heart"></i>
+          <span id={element._id + "like_span"}>Like</span>
         </button>
         <button
           className="btn_button"
@@ -543,7 +549,8 @@ function Home(props) {
           }}
           id={element._id + "save"}
         >
-          <i className="far fa-bookmark"></i> Save{" "}
+          <i className="far fa-bookmark"></i>
+          <span id={element._id + "save_span"}>Save</span>
         </button>
       </div>
       <div className="comment_div">
@@ -614,6 +621,7 @@ function Home(props) {
             <div className="comment_buttons">
               <button
                 className="btn_like"
+                id={comment._id + "comment"}
                 onClick={(e) => {
                   handleCommentLikesClick(
                     e,
@@ -622,7 +630,8 @@ function Home(props) {
                   );
                 }}
               >
-                <i className="far fa-heart"></i> Like
+                <i className="far fa-heart"></i>
+                <span id={comment._id + "span_comment"}>Like</span>
               </button>
 
               <p className="post_date">{comment.Commentslikes.length} likes</p>
@@ -635,6 +644,7 @@ function Home(props) {
   return (
     <div className="home_contain">
       {/* who follows */}
+
       <div style={{ background: "white" }} className="who_follow">
         <h5 className="tweet_title">who follows you</h5>
         <hr />
@@ -696,21 +706,23 @@ function Home(props) {
         <hr />
 
         <div className="new_tweets_container">
-          { user.photo?
-          (
+          {user.photo ? (
             <img
-            className="photo_new_tweets"
-            src={user.photo}
-          />
-          ):(
-
+              onClick={() => {
+                pushUserClick(user._id);
+              }}
+              className="photo_new_tweets"
+              src={user.photo}
+            />
+          ) : (
             <img
+              onClick={() => {
+                pushUserClick(user._id);
+              }}
               className="photo_new_tweets"
               src="https://i.pinimg.com/originals/50/f5/7c/50f57c9b434ca4ee7b12cc7728687fae.jpg"
             />
-          )
-
-          }
+          )}
           <textarea
             onChange={handlePostChange}
             name="post"

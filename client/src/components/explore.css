@@ -50,12 +50,21 @@
   transition: 1;
   color: #1e90ff;
 }
+#followers{
+color:grey;
+border:none;
+outline: none;
+}
+#followers:hover{
+  background: #1e90ff;
+}
 .search_bar {
   width: 100%;
   padding-left: 40px;
   border-radius: 10px;
   border: none;
   color: grey;
+  outline: none;
 }
 .btn_search {
   margin-left: auto;

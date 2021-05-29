@@ -12,72 +12,98 @@ function Bookmark(props) {
   const [photoComment, setphotoComment] = useState("");
   const [color, setColor] = useState(false);
 
+  const [replies, setReplies] = useState([]);
+  const [sortReplies, setSortReplies] = useState("false");
 
-  const [replies,setReplies]=useState([])
-  const [sortReplies, setSortReplies] =  useState("false")
-
-  const [media,setMedia] = useState([])
-  const [sortMedia, setSortMedia] = useState(false)
-  const [likes,setLikes]=useState([])
-  const [sortLikes, setSortLikes] = useState(false)
+  const [media, setMedia] = useState([]);
+  const [sortMedia, setSortMedia] = useState(false);
+  const [likes, setLikes] = useState([]);
+  const [sortLikes, setSortLikes] = useState(false);
   // tweets replies
-  const handletweetclick=()=>{
+  const handletweetclick = () => {
     setSubmit(!submit);
-  }
+  };
   //replies sort
-  const handlerepliesClick=()=>{
-    const post=[]
-    getPosts.map((element)=>{
-      element.comments.map((comment)=>{
-        if(comment.comment!==""){
-          post.push(element)
+  const handlerepliesClick = () => {
+    const post = [];
+    getPosts.map((element) => {
+      element.comments.map((comment) => {
+        if (comment.comment !== "") {
+          post.push(element);
         }
-      })
-     })  
+      });
+    });
 
-     setReplies(post)
-     setSortReplies(!sortReplies)
-  
-  }
+    setReplies(post);
+    setSortReplies(!sortReplies);
+  };
+  const commentState = () => {
+    getPosts.map((element) => {
+      element.comments.map((comment) => {
+        if (comment.Commentslikes.includes(user._id)) {
+          const attribute = document.getElementById(comment._id + "comment");
+          ReactDOM.findDOMNode(attribute).style.color = "pink";
+          document.getElementById(comment._id + "span_comment").innerHTML =
+            "liked";
+        } else {
+          const attribute = document.getElementById(comment._id + "comment");
+          ReactDOM.findDOMNode(attribute).style.color = "black";
+          document.getElementById(comment._id + "span_comment").innerHTML =
+            "like";
+        }
+      });
+    });
+  };
   useEffect(() => {
-    setPosts(replies)
-  },[sortReplies])
+    setPosts(replies);
+  }, [sortReplies]);
 
   //media sort
-  const handleMediaClick=()=>{
-    const post=[]
-    getPosts.map((element)=>{
-     element.comments.map((comment)=>{
-       if(comment.userPhoto!==""){
-         post.push(element)
-       }
-     })  
-  })
-  setMedia(post)
-  setSortMedia(!sortMedia)
-  }
-  useEffect(()=>{
-    setPosts(media)
-  },[sortMedia])
+  const handleMediaClick = () => {
+    const post = [];
+    getPosts.map((element) => {
+      element.comments.map((comment) => {
+        if (comment.userPhoto !== "") {
+          post.push(element);
+        }
+      });
+    });
+    setMedia(post);
+    setSortMedia(!sortMedia);
+  };
+  useEffect(() => {
+    setPosts(media);
+  }, [sortMedia]);
 
   //likes sort
   useEffect(() => {
-    setPosts(likes)
-  },[sortLikes])
- const handleLikeClick=()=>{
-  setLikes(getPosts.sort((a, b) => (a.likesNumber < b.likesNumber) ? 11 : (a.likesNumber === b.likesNumber) ? ((a.post > b.post) ? 1 : -1) : -1 ))
-  setSortLikes(!sortLikes)
- }
- 
+    setPosts(likes);
+  }, [sortLikes]);
+  const handleLikeClick = () => {
+    setLikes(
+      getPosts.sort((a, b) =>
+        a.likesNumber < b.likesNumber
+          ? 11
+          : a.likesNumber === b.likesNumber
+          ? a.post > b.post
+            ? 1
+            : -1
+          : -1
+      )
+    );
+    setSortLikes(!sortLikes);
+  };
+
   const saveState = () => {
     getPosts.map((element) => {
-
       if (element.saved.includes(user._id)) {
         const attribute = document.getElementById(element._id + "save");
         ReactDOM.findDOMNode(attribute).style.color = "blue";
+        document.getElementById(element._id + "save_span").innerHTML = "saved";
       } else {
         const attribute = document.getElementById(element._id + "save");
         ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(element._id + "save_span").innerHTML = "save";
       }
     });
   };
@@ -86,21 +112,26 @@ function Bookmark(props) {
       if (element.likes.includes(user._id)) {
         const attribute = document.getElementById(element._id + "like");
         ReactDOM.findDOMNode(attribute).style.color = "pink";
+        document.getElementById(element._id + "like_span").innerHTML = "liked";
       } else {
         const attribute = document.getElementById(element._id + "like");
         ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(element._id + "like_span").innerHTML = "like";
       }
     });
   };
   const retweetsState = () => {
-   getPosts.map((element) => {
- 
+    getPosts.map((element) => {
       if (element.retweets.includes(user._id)) {
         const attribute = document.getElementById(element._id + "retweet");
         ReactDOM.findDOMNode(attribute).style.color = "green";
+        document.getElementById(element._id + "retweet_span").innerHTML =
+          "retweeted";
       } else {
         const attribute = document.getElementById(element._id + "retweet");
         ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(element._id + "retweet_span").innerHTML =
+          "retweet";
       }
     });
   };
@@ -108,6 +139,7 @@ function Bookmark(props) {
     saveState();
     likesState();
     retweetsState();
+    commentState();
   }, [color]);
   const currentDateTime = (date) => {
     const dateNow = moment();
@@ -128,7 +160,6 @@ function Bookmark(props) {
     axios
       .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
-
         setUser(data);
       })
       .catch((err) => {
@@ -136,11 +167,9 @@ function Bookmark(props) {
       });
   };
   const getAllPosts = () => {
-
     axios
       .get(`http://localhost:4000/api/post/bookmarks/${user._id}`)
       .then(({ data }) => {
-
         setPosts(data);
         setColor(!color);
       });
@@ -174,7 +203,6 @@ function Bookmark(props) {
   const handleClickComment = (e, id) => {
     e.preventDefault();
 
-
     const comments = [];
     const data = {
       userPhoto: user.photo,
@@ -187,18 +215,12 @@ function Bookmark(props) {
     axios
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
-   
-
         comments.push(data._id);
       })
       .then(() => {
-
-
         axios
           .patch(`http://localhost:4000/api/post/${id}`, { comments: comments })
-          .then((data) => {
-       
-          });
+          .then((data) => {});
       })
       .catch((err) => {
         console.log(err);
@@ -209,8 +231,6 @@ function Bookmark(props) {
 
     setSubmit(!submit);
     if (!like.includes(user._id)) {
-      const element = document.getElementById(id + "like");
-      ReactDOM.findDOMNode(element).style.color = "red";
       const data2 = {
         message: true,
         likes: id,
@@ -221,9 +241,7 @@ function Bookmark(props) {
       };
       axios
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
-        .then(({ data }) => {
-        
-        })
+        .then(({ data }) => {})
         .catch((err) => {
           console.log(err);
         })
@@ -231,7 +249,6 @@ function Bookmark(props) {
           axios
             .patch(`http://localhost:4000/api/user/likes/${user._id}`, data2)
             .then(({ data }) => {
-     
               setSubmit(!submit);
             })
             .catch((err) => {
@@ -239,8 +256,6 @@ function Bookmark(props) {
             });
         });
     } else if (like.includes(user._id)) {
-      const element = document.getElementById(id + "like");
-      ReactDOM.findDOMNode(element).style.color = "black";
       const data2 = {
         message: false,
         likes: id,
@@ -251,9 +266,7 @@ function Bookmark(props) {
       };
       axios
         .patch(`http://localhost:4000/api/post/likes/${id}`, data)
-        .then(() => {
-         
-        })
+        .then(() => {})
         .catch((err) => {
           console.log(err);
         })
@@ -261,7 +274,6 @@ function Bookmark(props) {
           axios
             .patch(`http://localhost:4000/api/user/likes/${user._id}`, data2)
             .then(({ data }) => {
-      
               setSubmit(!submit);
             })
             .catch((err) => {
@@ -278,17 +290,13 @@ function Bookmark(props) {
       photo: photouser,
       public: false,
     };
-    const element = document.getElementById(id + "retweet");
-    ReactDOM.findDOMNode(element).style.color = "green";
 
     const data = {
       retweets: id,
     };
     axios
       .patch(`http://localhost:4000/api/post/retweet/${id}`, data)
-      .then(({ data }) => {
-      
-      })
+      .then(({ data }) => {})
       .catch((err) => {
         console.log(err);
       })
@@ -296,7 +304,6 @@ function Bookmark(props) {
         axios
           .post(`http://localhost:4000/api/post/`, data1)
           .then(({ data }) => {
-   
             setSubmit(!submit);
           })
           .catch((err) => {
@@ -307,9 +314,6 @@ function Bookmark(props) {
 
   const handleTClickSaved = (id, save, e) => {
     e.preventDefault();
-
-    let element = document.getElementById(id + "save");
-    ReactDOM.findDOMNode(element).style.color = "blue";
 
     if (!save.includes(user._id)) {
       const data = {
@@ -322,8 +326,7 @@ function Bookmark(props) {
       };
       axios
         .patch(`http://localhost:4000/api/post/saved/${id}`, data)
-        .then(({ data }) => {
-        })
+        .then(({ data }) => {})
         .catch((err) => {
           console.log(err);
         })
@@ -331,7 +334,6 @@ function Bookmark(props) {
           axios
             .patch(`http://localhost:4000/api/user/saved/${user._id}`, data2)
             .then(({ data }) => {
-         
               setSubmit(!submit);
             })
             .catch((err) => {
@@ -339,8 +341,6 @@ function Bookmark(props) {
             });
         });
     } else if (save.includes(user._id)) {
-      let element = document.getElementById(id + "save");
-      ReactDOM.findDOMNode(element).style.color = "black";
       const data = {
         message: false,
         saved: user._id,
@@ -351,9 +351,7 @@ function Bookmark(props) {
       };
       axios
         .patch(`http://localhost:4000/api/post/saved/${id}`, data)
-        .then(({ data }) => {
- 
-        })
+        .then(({ data }) => {})
         .catch((err) => {
           console.log(err);
         })
@@ -361,7 +359,6 @@ function Bookmark(props) {
           axios
             .patch(`http://localhost:4000/api/user/saved/${user._id}`, data2)
             .then(({ data }) => {
-          
               setSubmit(!submit);
             })
             .catch((err) => {
@@ -388,7 +385,6 @@ function Bookmark(props) {
       axios
         .patch(`http://localhost:4000/api/comment/${id}`, data)
         .then(({ data }) => {
-
           setSubmit(!submit);
         })
         .catch((err) => {
@@ -402,7 +398,6 @@ function Bookmark(props) {
       axios
         .patch(`http://localhost:4000/api/comment/${id}`, data)
         .then(({ data }) => {
-    
           setSubmit(!submit);
         })
         .catch((err) => {
@@ -415,10 +410,18 @@ function Bookmark(props) {
     <div className="Bookmark_container">
       {/* filter  */}
       <div style={{ background: "white" }} className="filter_container">
-        <button className="filter_item" onClick={handletweetclick}>Tweets</button>
-        <button className="filter_item" onClick={handlerepliesClick}>Tweets & replies</button>
-        <button className="filter_item" onClick={handleMediaClick}>Media</button>
-        <button className="filter_item" onClick={handleLikeClick}>Likes</button>
+        <button className="filter_item" onClick={handletweetclick}>
+          Tweets
+        </button>
+        <button className="filter_item" onClick={handlerepliesClick}>
+          Tweets & replies
+        </button>
+        <button className="filter_item" onClick={handleMediaClick}>
+          Media
+        </button>
+        <button className="filter_item" onClick={handleLikeClick}>
+          Likes
+        </button>
       </div>
 
       {/* post_container */}
@@ -470,7 +473,8 @@ function Bookmark(props) {
                 }}
                 id={element._id + "retweet"}
               >
-                <i className="fa fa-retweet"></i> Retweet
+                <i className="fa fa-retweet"></i>
+                <span id={element._id + "retweet_span"}>Retweet</span>
               </button>
               <button
                 className="btn_button"
@@ -479,7 +483,8 @@ function Bookmark(props) {
                 }}
                 id={element._id + "like"}
               >
-                <i className="far fa-heart"></i> Like
+                <i className="far fa-heart"></i>
+                <span id={element._id + "like_span"}>Like</span>
               </button>
               <button
                 className="btn_button"
@@ -488,14 +493,12 @@ function Bookmark(props) {
                 }}
                 id={element._id + "save"}
               >
-                <i className="far fa-bookmark"></i> Save{" "}
+                <i className="far fa-bookmark"></i>
+                <span id={element._id + "save_span"}>Save</span>
               </button>
             </div>
             <div className="comment_div">
-              <img
-                className="tof_comment"
-                src={user.photo}
-              />
+              <img className="tof_comment" src={user.photo} />
               <div className="tarea">
                 <textarea
                   className="text_comment"
@@ -564,16 +567,23 @@ function Bookmark(props) {
                   </div>
 
                   <div className="comment_buttons">
-                    <button className="btn_like"         onClick={(e) => {
-                  handleCommentLikesClick(
-                    e,
-                    comment._id,
-                    comment.Commentslikes
-                  );
-                }}>
-                      <i className="far fa-heart"></i> Like
+                    <button
+                      className="btn_like"
+                      id={comment._id + "comment"}
+                      onClick={(e) => {
+                        handleCommentLikesClick(
+                          e,
+                          comment._id,
+                          comment.Commentslikes
+                        );
+                      }}
+                    >
+                      <i className="far fa-heart"></i>
+                      <span id={comment._id + "span_comment"}>Like</span>
                     </button>
-                    <p className="post_date">{comment.Commentslikes.length} retweets</p>
+                    <p className="post_date">
+                      {comment.Commentslikes.length} likes
+                    </p>
                   </div>
                 </div>
               ))}

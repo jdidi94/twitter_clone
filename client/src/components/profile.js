@@ -8,24 +8,67 @@ function Profile(props) {
   const { state } = props.location;
   const [user, setUser] = useState({});
   const [posts, setPosts] = useState([]);
-  const [followers, setfollowers] = useState("");
-  const [following, setfollowing] = useState("");
+  const [followers, setfollowers] = useState([]);
+  const [following, setfollowing] = useState([]);
   const [submit, setload] = useState(false);
   const [comment, createComment] = useState("");
-
+  const [text, setText] = useState("user");
   const [photoComment, setphotoComment] = useState("");
   const [color, setColor] = useState(false);
   const [replies, setReplies] = useState([]);
   const [sortReplies, setSortReplies] = useState("false");
-
+  const [followerChecker, setFollowerChecker] = useState([]);
   const [media, setMedia] = useState([]);
   const [sortMedia, setSortMedia] = useState(false);
   const [likes, setLikes] = useState([]);
   const [sortLikes, setSortLikes] = useState(false);
+  const [currentUser, setCurrentUser] = useState({});
+
+
+
   // tweets replies
   const handletweetclick = () => {
     setload(!submit);
   };
+  const commentState=(()=>{
+    posts.map((element) => {
+      console.log("element",element)
+     element.comments.map((comment) =>{
+      console.log( "element.comments", element.comments)
+     if(comment.Commentslikes.includes(user._id)){
+    const attribute = document.getElementById(comment._id + "comment");
+    ReactDOM.findDOMNode(attribute).style.color = "pink";
+    document.getElementById(comment._id + "span_comment").innerHTML = "liked";
+      }else{
+        const attribute = document.getElementById(comment._id + "comment");
+        ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(comment._id + "span_comment").innerHTML = "like";
+      }
+    })
+      
+    })
+   })
+  const followes=(followerss)=>{
+    console.log("followesr",followerss)
+    followerss.map((follow)=>{
+      if(follow._id===state.user._id){
+        const attribute = document.getElementById(state.user._id + "followers");
+        ReactDOM.findDOMNode(attribute).style.display = "none";
+      }
+    })
+
+  }
+  const followings=(followings)=>{
+
+    followings.map((follow)=>{
+      if(follow._id===state.user._id){
+        const attribute = document.getElementById(state.user._id + "following");
+        ReactDOM.findDOMNode(attribute).style.display = "none";
+      }
+    })
+
+  }
+
   //replies sort
   const handlerepliesClick = () => {
     const post = [];
@@ -86,20 +129,44 @@ function Profile(props) {
       if (element.saved.includes(state.user._id)) {
         const attribute = document.getElementById(element._id + "save");
         ReactDOM.findDOMNode(attribute).style.color = "blue";
+        document.getElementById(element._id + "save_span").innerHTML = "saved";
       } else {
         const attribute = document.getElementById(element._id + "save");
         ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(element._id + "save_span").innerHTML = "save";
       }
     });
   };
+  const followersState=(followers)=>{
+  followers.map((element)=>{
+    if(element.followers.includes(state.user._id)){
+      document.getElementById(element._id + "followers").innerHTML = "UnFollow";
+  
+    }else{
+     document.getElementById(element._id + "span_followers").innerHTML = "follow";
+    }
+  })
+  }
+  const followingState=(followers)=>{
+    followers.map((element)=>{
+      if(element.followers.includes(state.user._id)){
+        document.getElementById(element._id + "following").innerHTML = "UnFollow";
+      }else{
+        document.getElementById(element._id + "span_following").innerHTML = "Follow";
+      }
+    })
+    }
+
   const likesState = () => {
     posts.map((element) => {
       if (element.likes.includes(state.user._id)) {
         const attribute = document.getElementById(element._id + "like");
         ReactDOM.findDOMNode(attribute).style.color = "pink";
+        document.getElementById(element._id + "like_span").innerHTML = "liked";
       } else {
         const attribute = document.getElementById(element._id + "like");
         ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(element._id + "like_span").innerHTML = "like";
       }
     });
   };
@@ -108,16 +175,22 @@ function Profile(props) {
       if (element.retweets.includes(state.user._id)) {
         const attribute = document.getElementById(element._id + "retweet");
         ReactDOM.findDOMNode(attribute).style.color = "green";
+        document.getElementById(element._id + "retweet_span").innerHTML = "retweeted";
+
       } else {
         const attribute = document.getElementById(element._id + "retweet");
         ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(element._id + "retweet_span").innerHTML = "retweet";
+
       }
     });
   };
+
   useEffect(() => {
     saveState();
     likesState();
     retweetsState();
+    commentState()
   }, [color]);
 
   const currentDateTime = (date) => {
@@ -125,11 +198,14 @@ function Profile(props) {
 
     if (dateNow.diff(date, "seconds") <= 60) {
       return moment(date).startOf("seconds").fromNow();
-    } else if (dateNow.diff(date, "minutes") > 1) {
+    }
+    if (dateNow.diff(date, "minutes") > 1) {
       return moment(date).startOf("minutes").fromNow();
-    } else if (dateNow.diff(date, "hours") >= 1) {
+    }
+    if (dateNow.diff(date, "hours") >= 1) {
       return moment().endOf("day", "hours", "minutes").fromNow();
-    } else if (dateNow.diff(date, "days") >= 1) {
+    }
+    if (dateNow.diff(date, "days") >= 1) {
       return moment(date).format("MMMM Do YYYY, h:mm:ss a");
     }
   };
@@ -138,13 +214,37 @@ function Profile(props) {
     axios
       .get(`http://localhost:4000/api/user/getUser/${state.id}`)
       .then(({ data }) => {
-
-       
-
-        setUser(data);
-        setfollowers(data.followers.length);
-
-        setfollowing(data.following.length);
+        setUser(data.populate);
+ 
+        setfollowers(data.populate.followers);
+        setfollowing(data.populate.following);
+        setFollowerChecker(data.user.followers);
+        followes(data.populate.followers)
+        followersState(data.populate.followers)
+        followings(data.populate.following)
+        followingState(data.populate.following)
+        if (state.id !== state.user._id) {
+          console.log("followerCheckerdata", data.user.followers);
+          if (!data.user.followers.includes(state.user._id)) {
+            setText("follow");
+          } else {
+            setText("unfollow");
+          }
+        } else {
+          setText("user");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const getCurrentUsers = () => {
+    const token = localStorage.getItem("token");
+    const headers = { headers: { Authorization: `Bearer ${token}` } };
+    axios
+      .get("http://localhost:4000/api/user/", headers)
+      .then(({ data }) => {
+        setCurrentUser(data);
       })
       .catch((err) => {
         console.log(err);
@@ -154,7 +254,6 @@ function Profile(props) {
     axios
       .get(`http://localhost:4000/api/post/user/${state.id}`)
       .then(({ data }) => {
-       
         setPosts(data);
         setColor(!color);
       })
@@ -166,6 +265,7 @@ function Profile(props) {
   useEffect(() => {
     getUser();
     getPosts();
+    getCurrentUsers();
   }, [submit]);
 
   const uploadImageComment = (event) => {
@@ -178,7 +278,6 @@ function Profile(props) {
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setphotoComment(data.url);
- 
       })
       .catch((err) => {
         console.log(err);
@@ -193,8 +292,7 @@ function Profile(props) {
 
     setload(!submit);
     if (!like.includes(state.user._id)) {
-      const element = document.getElementById(id + "like");
-      ReactDOM.findDOMNode(element).style.color = "red";
+
 
       const data = {
         message: true,
@@ -227,8 +325,7 @@ function Profile(props) {
             });
         });
     } else if (like.includes(state.user._id)) {
-      const element = document.getElementById(id + "like");
-      ReactDOM.findDOMNode(element).style.color = "black";
+
 
       const data = {
         message: false,
@@ -263,6 +360,7 @@ function Profile(props) {
         });
     }
   };
+
   const handleTweetsClick = (id, e, postuser, photouser) => {
     e.preventDefault();
     const data1 = {
@@ -271,8 +369,7 @@ function Profile(props) {
       photo: photouser,
       public: false,
     };
-    const element = document.getElementById(id + "retweet");
-    ReactDOM.findDOMNode(element).style.color = "green";
+
 
     const data = {
       retweets: state.user._id,
@@ -298,11 +395,11 @@ function Profile(props) {
       });
   };
 
+  
   const handleTClickSaved = (id, save, e) => {
     e.preventDefault();
 
-    let element = document.getElementById(id + "save");
-    ReactDOM.findDOMNode(element).style.color = "blue";
+
 
     setload(!submit);
     if (!save.includes(state.user._id)) {
@@ -337,8 +434,8 @@ function Profile(props) {
             });
         });
     } else if (save.includes(state.user._id)) {
-      let element = document.getElementById(id + "save");
-      ReactDOM.findDOMNode(element).style.color = "black";
+
+
       const data = {
         message: false,
         saved: state.user._id,
@@ -374,10 +471,7 @@ function Profile(props) {
   const handleTClickFollowing = (e) => {
     e.preventDefault();
 
-    // let element = document.getElementById(id + "save");
-    // ReactDOM.findDOMNode(element).style.color = "blue";
-
-    if (!user.followers.includes(state.user._id)) {
+    if (!followerChecker.includes(state.user._id)) {
       const data1 = {
         message: true,
         followers: state.user._id,
@@ -404,11 +498,10 @@ function Profile(props) {
             .then(({ data }) => {
               console.log(data);
               setload(!submit);
+              setText("unfollow");
             });
         });
     } else {
-      // let element = document.getElementById(id + "save");
-      // ReactDOM.findDOMNode(element).style.color = "black";
       console.log("hiii");
       const data1 = {
         message: false,
@@ -435,6 +528,7 @@ function Profile(props) {
             )
             .then(({ data }) => {
               console.log(data);
+              setText("follow");
               setload(!submit);
             });
         });
@@ -442,7 +536,6 @@ function Profile(props) {
   };
   const handleClickComment = (e, id) => {
     e.preventDefault();
-
 
     const comments = [];
     const data = {
@@ -456,13 +549,9 @@ function Profile(props) {
     axios
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
-    
-
         comments.push(data._id);
       })
       .then(() => {
-
-
         axios
           .patch(`http://localhost:4000/api/post/${id}`, { comments: comments })
           .then((data) => {
@@ -508,6 +597,143 @@ function Profile(props) {
         });
     }
   };
+  const handleTClickUpdateFollowing = (e, element) => {
+    e.preventDefault();
+
+    if (!element.followers.includes(state.user._id)) {
+      document.getElementById(element._id + "followers").innerHTML = "UnFollow";
+
+      const data1 = {
+        message: true,
+        followers: state.user._id,
+      };
+      const data = {
+        message: true,
+        following: element._id,
+      };
+      axios
+        .patch(
+          `http://localhost:4000/api/user/following/${state.user._id}`,
+          data
+        )
+        .then(({ data }) => {
+          console.log(data);
+        })
+
+        .then(() => {
+          axios
+            .patch(
+              `http://localhost:4000/api/user/followers/${element._id}`,
+              data1
+            )
+            .then(({ data }) => {
+              console.log(data);
+              setload(!submit);
+            });
+        });
+    } else {
+      document.getElementById(element._id + "followers").innerHTML = "Follow";
+
+      console.log("hiii");
+      const data1 = {
+        message: false,
+        followers: state.user._id,
+      };
+      const data = {
+        message: false,
+        following: element._id,
+      };
+      axios
+        .patch(
+          `http://localhost:4000/api/user/following/${state.user._id}`,
+          data
+        )
+        .then(({ data }) => {
+          console.log(data);
+        })
+
+        .then(() => {
+          axios
+            .patch(
+              `http://localhost:4000/api/user/followers/${element._id}`,
+              data1
+            )
+            .then(({ data }) => {
+              console.log(data);
+              setload(!submit);
+            });
+        });
+    }
+  };
+  const handleTClickUpdateFollowers= (e, element) => {
+    e.preventDefault();
+
+    if (!element.followers.includes(state.user._id)) {
+      document.getElementById(element._id + "following").innerHTML = "UnFollow";
+
+      const data1 = {
+        message: true,
+        followers: state.user._id,
+      };
+      const data = {
+        message: true,
+        following: element._id,
+      };
+      axios
+        .patch(
+          `http://localhost:4000/api/user/following/${state.user._id}`,
+          data
+        )
+        .then(({ data }) => {
+          console.log(data);
+        })
+
+        .then(() => {
+          axios
+            .patch(
+              `http://localhost:4000/api/user/followers/${element._id}`,
+              data1
+            )
+            .then(({ data }) => {
+              console.log(data);
+              setload(!submit);
+            });
+        });
+    } else {
+      document.getElementById(element._id + "following").innerHTML = "Follow";
+
+      console.log("hiii");
+      const data1 = {
+        message: false,
+        followers: state.user._id,
+      };
+      const data = {
+        message: false,
+        following: element._id,
+      };
+      axios
+        .patch(
+          `http://localhost:4000/api/user/following/${state.user._id}`,
+          data
+        )
+        .then(({ data }) => {
+          console.log(data);
+        })
+
+        .then(() => {
+          axios
+            .patch(
+              `http://localhost:4000/api/user/followers/${element._id}`,
+              data1
+            )
+            .then(({ data }) => {
+              console.log(data);
+              setload(!submit);
+            });
+        });
+    }
+  };
+
 
   return (
     <div className="profile_container">
@@ -533,17 +759,159 @@ function Profile(props) {
           <div>
             <div className="user_info">
               <h5 className="name_info">{user.name}</h5>
-              <p className="follow_numbers">{followers} followers</p>
-              <p className="follow_numbers">{following} following</p>
-              {state.id !== state.user._id ? (
+              <button
+                type="button"
+                ClassName="btn btn-primary"
+                data-toggle="modal"
+                data-target="#exampleModalCenter"
+                id="followers"
+              >
+                {followers.length} followers
+              </button>
+              <div
+                className="modal fade"
+                id="exampleModalCenter"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="exampleModalCenterTitle"
+                aria-hidden="true"
+              >
+                <div
+                  className="modal-dialog modal-dialog-centered"
+                  role="document"
+                >
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="exampleModalLongTitle">
+                        {user.name} followers
+                      </h5>
+                      <button
+                        type="button"
+                        className="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div className="modal-body">
+                      {followers.map((element) => (
+                        <div key={element._id} className="follow_container">
+                          <div className="follow_info">
+                            <img className="follow_img" src={element.photo} />
+                            <div>
+                              <h5 className="follow_name">{element.name}</h5>
+                              <p className="follow_numbers">
+                                {element.followers.length} followers
+                              </p>
+                            </div>
+                            <button
+                              className="follow_button"
+                              onClick={(e) => {
+                                handleTClickUpdateFollowing(e, element);
+                              }}
+                              id={element._id + "followers"}
+                            >
+                              <i className="fas fa-user-plus"></i>
+                              <span id={element._id+"span_followers"}>Folllow</span>
+                            </button>
+                          </div>
+                          <p className="follow_paragraph"> {element.bio}</p>
+
+                          <hr />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-primary"
+                data-toggle="modal"
+                data-target="#exampleModal"
+                id="followers"
+              >
+                {following.length} following
+              </button>
+              <div
+                className="modal fade"
+                id="exampleModal"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="exampleModalCenterTitle"
+                aria-hidden="true"
+              >
+                <div
+                  className="modal-dialog modal-dialog-centered"
+                  role="document"
+                >
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="exampleModalLongTitle">
+                        {user.name} is following
+                      </h5>
+                      <button
+                        type="button"
+                        className="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div className="modal-body">
+                      {following.map((element) => (
+                        <div key={element._id} className="follow_container">
+                          <div className="follow_info">
+                            <img className="follow_img" src={element.photo} />
+                            <div>
+                              <h5 className="follow_name">{element.name}</h5>
+                              <p className="follow_numbers">
+                                {element.followers.length} followers
+                              </p>
+                            </div>
+                            <button
+                              className="follow_button"
+                              onClick={(e) => {
+                                handleTClickUpdateFollowers(e, element);
+                              }}
+                              id={element._id + "following"}
+                            >
+                               <i className="fas fa-user-plus"></i>
+                              <span id={element._id+"span_following"}>Folllow</span>
+                         
+                            </button>
+                          </div> 
+                          <p className="follow_paragraph"> {element.bio}</p>
+
+                          <hr />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {text === "follow" ? (
                 <button
                   className="follow_button"
                   onClick={handleTClickFollowing}
                 >
-                  <i class="fas fa-user-plus"></i> Follow
+                  <i className="fas fa-user-plus"></i>Follow
                 </button>
+              ) : text === "unfollow" ? (
+                <button
+                  className="follow_button"
+                  onClick={handleTClickFollowing}
+                >
+                  Unfollow
+                </button>
+              ) : text === "user" ? (
+                <div className="empthy"></div>
               ) : (
-                <div></div>
+                <div className="empthy"></div>
               )}
             </div>
             <div className="paragraph_div">
@@ -611,7 +979,9 @@ function Profile(props) {
                   }}
                   id={element._id + "retweet"}
                 >
-                  <i className="fa fa-retweet"></i> Retweet
+                  <i className="fa fa-retweet"></i>
+          <span  id={element._id+"retweet_span"}>Retweet</span>
+
                 </button>
                 <button
                   className="btn_button"
@@ -620,7 +990,8 @@ function Profile(props) {
                   }}
                   id={element._id + "like"}
                 >
-                  <i className="far fa-heart"></i> Like
+                  <i className="far fa-heart"></i> 
+                  <span id={element._id+"like_span"}>Like</span>
                 </button>
                 <button
                   className="btn_button"
@@ -629,7 +1000,8 @@ function Profile(props) {
                   }}
                   id={element._id + "save"}
                 >
-                  <i className="far fa-bookmark"></i> Save{" "}
+                  <i className="far fa-bookmark"></i>
+                  <span id={element._id+"save_span"}>Save</span>
                 </button>
               </div>
               <div className="comment_div">
@@ -696,6 +1068,7 @@ function Profile(props) {
 
                     <div className="comment_buttons">
                       <button
+                             id={ comment._id+"comment"}
                         className="btn_like"
                         onClick={(e) => {
                           handleCommentLikesClick(
@@ -705,9 +1078,12 @@ function Profile(props) {
                           );
                         }}
                       >
-                        <i className="far fa-heart"></i> Like
+                        <i className="far fa-heart"></i>
+                        <span id={comment._id+"span_comment"}>Like</span>
                       </button>
-                      <p className="post_date">{comment.Commentslikes.length} retweets</p>
+                      <p className="post_date">
+                        {comment.Commentslikes.length} retweets
+                      </p>
                     </div>
                   </div>
                 ))}

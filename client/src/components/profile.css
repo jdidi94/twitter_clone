@@ -11,7 +11,10 @@
 
   margin: 0;
 }
-
+.profile_cover_user{
+  width: 100px;
+  height: 100px;
+}
 .info_group {
   height: 200px;
   width: 100%;

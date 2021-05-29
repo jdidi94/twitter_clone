@@ -9,48 +9,87 @@ function Explore(props) {
   const [submit, setSubmit] = useState("");
   const [photoComment, setphotoComment] = useState("");
   const [user, setUser] = useState({});
-  const [color,setColor]=useState(false)
-  const [sort,setSort]=useState(false)
-  const [sortlatest,setSortLatest]=useState(false)
-  const [sortMedia,setSortMedia]=useState(false)
-  const [top,setTop]=useState([])
-  const [latest,setLatest]=useState([])
-  const [media,setMedia]=useState([])
+  const [color, setColor] = useState(false);
+  const [sort, setSort] = useState(false);
+  const [sortlatest, setSortLatest] = useState(false);
+  const [sortMedia, setSortMedia] = useState(false);
+  const [top, setTop] = useState([]);
+  const [latest, setLatest] = useState([]);
+  const [media, setMedia] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [search,setSearch]= useState(false)
+  const [search, setSearch] = useState(false);
   const saveState = () => {
     getPosts.map((element) => {
-   
-      if (element.saved.includes(user._id)) {
-        const attribute = document.getElementById(element._id + "save");
-        ReactDOM.findDOMNode(attribute).style.color = "blue";
+      if (element) {
+        console.log(element);
+        if (element.saved.includes(user._id)) {
+          const attribute = document.getElementById(element._id + "save");
+          ReactDOM.findDOMNode(attribute).style.color = "blue";
+          document.getElementById(element._id + "save_span").innerHTML =
+            "saved";
+        } else {
+          const attribute = document.getElementById(element._id + "save");
+          ReactDOM.findDOMNode(attribute).style.color = "black";
+          document.getElementById(element._id + "save_span").innerHTML = "save";
+        }
       } else {
-        const attribute = document.getElementById(element._id + "save");
-        ReactDOM.findDOMNode(attribute).style.color = "black";
+        return;
       }
     });
   };
+  const commentState=(()=>{
+    getPosts.map((element) => {
+      console.log("element",element)
+     element.comments.map((comment) =>{
+      console.log( "element.comments", element.comments)
+     if(comment.Commentslikes.includes(user._id)){
+    const attribute = document.getElementById(comment._id + "comment");
+    ReactDOM.findDOMNode(attribute).style.color = "pink";
+    document.getElementById(comment._id + "span_comment").innerHTML = "liked";
+      }else{
+        const attribute = document.getElementById(comment._id + "comment");
+        ReactDOM.findDOMNode(attribute).style.color = "black";
+        document.getElementById(comment._id + "span_comment").innerHTML = "like";
+      }
+    })
+      
+    })
+   })
   const likesState = () => {
     getPosts.map((element) => {
-      if (element.likes.includes(user._id)) {
-        const attribute = document.getElementById(element._id + "likes");
-        ReactDOM.findDOMNode(attribute).style.color = "pink";
+      if (element) {
+        if (element.likes.includes(user._id)) {
+          const attribute = document.getElementById(element._id + "likes");
+          ReactDOM.findDOMNode(attribute).style.color = "pink";
+          document.getElementById(element._id + "like_span").innerHTML =
+            "liked";
+        } else {
+          const attribute = document.getElementById(element._id + "likes");
+          ReactDOM.findDOMNode(attribute).style.color = "black";
+          document.getElementById(element._id + "like_span").innerHTML = "like";
+        }
       } else {
-        const attribute = document.getElementById(element._id + "likes");
-        ReactDOM.findDOMNode(attribute).style.color = "black";
+        return;
       }
     });
   };
   const retweetsState = () => {
     console.log("hiiiiii");
     getPosts.map((element) => {
-  
-      if (element.retweets.includes(user._id)) {
-        const attribute = document.getElementById(element._id + "retweet");
-        ReactDOM.findDOMNode(attribute).style.color = "green";
+      if (element) {
+        if (element.retweets.includes(user._id)) {
+          const attribute = document.getElementById(element._id + "retweet");
+          ReactDOM.findDOMNode(attribute).style.color = "green";
+          document.getElementById(element._id + "retweet_span").innerHTML =
+            "retweeted";
+        } else {
+          const attribute = document.getElementById(element._id + "retweet");
+          ReactDOM.findDOMNode(attribute).style.color = "black";
+          document.getElementById(element._id + "retweet_span").innerHTML =
+            "retweet";
+        }
       } else {
-        const attribute = document.getElementById(element._id + "retweet");
-        ReactDOM.findDOMNode(attribute).style.color = "black";
+        return;
       }
     });
   };
@@ -58,6 +97,7 @@ function Explore(props) {
     saveState();
     likesState();
     retweetsState();
+    commentState();
   }, [color]);
   const currentDateTime = (date) => {
     const dateNow = moment();
@@ -79,9 +119,8 @@ function Explore(props) {
       .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
         // console.log("USERBEFORE", this.user);
-     
-        setUser(data);
 
+        setUser(data);
       })
       .catch((err) => {
         console.log(err);
@@ -89,8 +128,9 @@ function Explore(props) {
   };
   const getAllPosts = () => {
     axios.get("http://localhost:4000/api/post/").then(({ data }) => {
-      
-      setPosts(data);
+      const all = data.filter((element) => element.public === true);
+      setPosts(all);
+
       setColor(!color);
     });
   };
@@ -108,7 +148,6 @@ function Explore(props) {
       .post("https://api.cloudinary.com/v1_1/dkcwqbl9d/image/upload", image)
       .then(({ data }) => {
         setphotoComment(data.url);
-    
       })
       .catch((err) => {
         console.log(err);
@@ -118,22 +157,21 @@ function Explore(props) {
     e.preventDefault();
     createComment(e.target.value);
   };
-  const handleChangeSearch = event => {
+  const handleChangeSearch = (event) => {
     setSearchTerm(event.target.value);
   };
   useEffect(() => {
-    const results = getPosts.filter(person =>
+    const results = getPosts.filter((person) =>
       person.user.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setPosts(results);
   }, [search]);
-  const handlesearchClick=()=>{
-    setSearch(!search)
-  }
+  const handlesearchClick = () => {
+    setSearch(!search);
+  };
 
   const handleClickComment = (e, id) => {
     e.preventDefault();
-
 
     const comments = [];
     const data = {
@@ -147,13 +185,9 @@ function Explore(props) {
     axios
       .post("http://localhost:4000/api/comment/", data)
       .then(({ data }) => {
-     
-
         comments.push(data._id);
       })
       .then(() => {
-    
-
         axios
           .patch(`http://localhost:4000/api/post/${id}`, { comments: comments })
           .then((data) => {
@@ -166,50 +200,53 @@ function Explore(props) {
       });
   };
 
-  useEffect(()=>{
-  
-    setPosts(top)
- 
-  },[sort])
-  const clickTop=()=>{
+  useEffect(() => {
+    setPosts(top);
+  }, [sort]);
+  const clickTop = () => {
 
-    setTop(getPosts.sort((a, b) => (a.likesNumber < b.likesNumber) ? 11 : (a.likesNumber === b.likesNumber) ? ((a.post > b.post) ? 1 : -1) : -1 ))
-    setSort(!sort)
-}
-  useEffect(()=>{
-  setPosts(latest)
-  },[sortlatest])
+    setTop(
+      getPosts.sort((a, b) =>
+        a.likesNumber < b.likesNumber
+          ? 11
+          : a.likesNumber === b.likesNumber
+          ? a.post > b.post
+            ? 1
+            : -1
+          : -1
+      )
+    );
+    setSort(!sort);
+  };
+  useEffect(() => {
+    setPosts(latest);
+  }, [sortlatest]);
 
-  const clicklatest=()=>{
-  
-     setLatest(getPosts.sort((a, b) => (a.date < b.date) ? 1 : -1))
-     setSortLatest(!sortlatest)
+  const clicklatest = () => {
     
-  }
-  useEffect(()=>{
-
-    setPosts(media) 
-
-  },[sortMedia])
-  const clickMedia=()=>{
-    const post=[]
-    getPosts.map((element)=>{
-     element.comments.map((comment)=>{
-       if(comment.userPhoto!==""){
-         post.push(element)
-       }
-     })
-    })
-    setMedia(post)
-   setSortMedia(!sortMedia)
-
-  }
+    setLatest(getPosts.sort((a, b) => (a.date < b.date ? 1 : -1)));
+    setSortLatest(!sortlatest);
+  };
+  useEffect(() => {
+    setPosts(media);
+  }, [sortMedia]);
+  const clickMedia = () => {
+    const post = [];
+    getPosts.map((element) => {
+      element.comments.map((comment) => {
+        if (comment.userPhoto !== "") {
+          post.push(element);
+        }
+      });
+    });
+    setMedia(post);
+    setSortMedia(!sortMedia);
+  };
   const handleLikesClick = (id, like, e) => {
     e.preventDefault();
 
     if (!like.includes(user._id)) {
-      const element = document.getElementById(id + "likes");
-      ReactDOM.findDOMNode(element).style.color = "red";
+
 
       const data = {
         message: true,
@@ -240,8 +277,7 @@ function Explore(props) {
             });
         });
     } else if (like.includes(user._id)) {
-      const element = document.getElementById(id + "likes");
-      ReactDOM.findDOMNode(element).style.color = "black";
+
 
       const data = {
         message: false,
@@ -280,8 +316,7 @@ function Explore(props) {
       photo: photouser,
       public: false,
     };
-    const element = document.getElementById(id + "retweet");
-    ReactDOM.findDOMNode(element).style.color = "green";
+
 
     const data = {
       retweets: user._id,
@@ -298,7 +333,6 @@ function Explore(props) {
         axios
           .post(`http://localhost:4000/api/post/`, data1)
           .then(({ data }) => {
-      
             setSubmit(!submit);
           })
           .catch((err) => {
@@ -310,8 +344,7 @@ function Explore(props) {
   const handleTClickSaved = (id, save, e) => {
     e.preventDefault();
 
-    let element = document.getElementById(id + "save");
-    ReactDOM.findDOMNode(element).style.color = "blue";
+
 
     if (!save.includes(user._id)) {
       const data = {
@@ -326,7 +359,6 @@ function Explore(props) {
         .patch(`http://localhost:4000/api/post/saved/${id}`, data)
         .then(({ data }) => {
           console.log(data);
-          
         })
         .catch((err) => {
           console.log(err);
@@ -337,15 +369,14 @@ function Explore(props) {
             .then(({ data }) => {
               console.log(data);
               setSubmit(!submit);
-            
             })
             .catch((err) => {
               console.log(err);
             });
         });
     } else if (save.includes(user._id)) {
-      let element = document.getElementById(id + "save");
-    ReactDOM.findDOMNode(element).style.color = "black";
+
+
       const data = {
         message: false,
         saved: user._id,
@@ -420,15 +451,28 @@ function Explore(props) {
     <div className="explore_container">
       {/* filter  */}
       <div style={{ background: "white" }} className="filter_container">
-        <button className="filter_item" onClick={clickTop}>Top</button>
-        <button className="filter_item" onClick={clicklatest}>Latest</button>
-        <button className="filter_item"onClick={clickMedia}>Media</button>
+        <button className="filter_item" onClick={clickTop}>
+          Top
+        </button>
+        <button className="filter_item" onClick={clicklatest}>
+          Latest
+        </button>
+        <button className="filter_item" onClick={clickMedia}>
+          Media
+        </button>
       </div>
       {/* search_container */}
       <div style={{ background: "white" }} className="search_container">
-        <i class="fas fa-search"></i>
-        <input className="search_bar" placeholder="Search"        value={searchTerm} onChange={handleChangeSearch}/>
-        <button className="btn_search"onClick={handlesearchClick}>Search</button>
+        <i className="fas fa-search"></i>
+        <input
+          className="search_bar"
+          placeholder="Search"
+          value={searchTerm}
+          onChange={handleChangeSearch}
+        />
+        <button className="btn_search" onClick={handlesearchClick}>
+          Search
+        </button>
       </div>
       {/* post_container */}
 
@@ -481,7 +525,8 @@ function Explore(props) {
                 }}
                 id={element._id + "retweet"}
               >
-                <i className="fa fa-retweet"></i> Retweet
+                <i className="fa fa-retweet"></i>
+                <span id={element._id + "retweet_span"}>Retweet</span>
               </button>
               <button
                 className="btn_button"
@@ -490,7 +535,8 @@ function Explore(props) {
                 }}
                 id={element._id + "likes"}
               >
-                <i className="far fa-heart"></i> Like
+                <i className="far fa-heart"></i>
+                <span id={element._id + "like_span"}>Like</span>
               </button>
               <button
                 className="btn_button"
@@ -499,14 +545,12 @@ function Explore(props) {
                 }}
                 id={element._id + "save"}
               >
-                <i className="far fa-bookmark"></i> Save{" "}
+                <i className="far fa-bookmark"></i>
+                <span id={element._id + "save_span"}>Save</span>
               </button>
             </div>
             <div className="comment_div">
-              <img
-                className="tof_comment"
-                src={user.photo}
-              />
+              <img className="tof_comment" src={user.photo} />
               <div className="tarea">
                 <textarea
                   className="text_comment"
@@ -570,21 +614,28 @@ function Explore(props) {
                         </div>
                       ) : (
                         <div className="photo_comment_div"></div>
-                      )}  
+                      )}
                     </div>
                   </div>
 
                   <div className="comment_buttons">
-                    <button className="btn_like"        onClick={(e) => {
-                  handleCommentLikesClick(
-                    e,
-                    comment._id,
-                    comment.Commentslikes
-                  );
-                }}>
-                      <i className="far fa-heart"></i> Like
+                    <button
+                     id={ comment._id+"comment"}
+                      className="btn_like"
+                      onClick={(e) => {
+                        handleCommentLikesClick(
+                          e,
+                          comment._id,
+                          comment.Commentslikes
+                        );
+                      }}
+                    >
+                      <i className="far fa-heart"></i>
+                      <span id={comment._id+"span_comment"}>Like</span>
                     </button>
-                    <p className="post_date">{comment.Commentslikes.length} retweets</p>
+                    <p className="post_date">
+                      {comment.Commentslikes.length} likes
+                    </p>
                   </div>
                 </div>
               ))}

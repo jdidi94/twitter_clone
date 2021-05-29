@@ -1,4 +1,6 @@
 import "./edit.css";
+
+
 import axios from "axios";
 import { React, useState, useEffect } from "react";
 import swal from "sweetalert";
@@ -116,7 +118,9 @@ function EditUser() {
   };
 
   return (
+    
     <div className="contain">
+
       {edit === false && (
         <div className="container">
           <div className="personal_info">

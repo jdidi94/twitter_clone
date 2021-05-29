@@ -1,7 +1,7 @@
 import "./App.css";
 import axios from "axios";
 
-import { Redirect,BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import { Redirect, BrowserRouter, Route, Switch, Link } from "react-router-dom";
 import Home from "./components/home.js";
 import Bookmark from "./components/bookmarks.js";
 import Explore from "./components/explore.js";
@@ -14,67 +14,76 @@ import store from "./store";
 import { Provider } from "react-redux";
 
 // eslint-disable-next-line
+
 function App(props) {
 
   const [user, setUser] = useState({});
+  const [submit, setSubmit] = useState("");
+  const [link ,setLink] = useState("")
   const token = localStorage.getItem("token");
+
   const logout = () => {
     localStorage.removeItem("token");
+};
 
-  };
   const getUser = () => {
-    const token = localStorage.getItem("token");
  
+
+
     const headers = { headers: { Authorization: `Bearer ${token}` } };
     axios
       .get("http://localhost:4000/api/user/", headers)
       .then(({ data }) => {
         // console.log("USERBEFORE", this.user);
-        console.log("here", data);
+
+        console.log("use r susers ", data);
         setUser(data);
-       
+         
+        setLink(`profile/${user._id}`)
+        console.log(data._id)
+
+
       })
       .catch((err) => {
         console.log(err);
       });
   };
   useEffect(() => {
-    getUser(); 
-  }, []);
 
-const PrivateRoutes=({component:Component,...rest})=>(
-<Route {...rest} render={(props)=>(
-  token!==""?
-  <Component {...props}/>
-  :<Redirect to="/"/>
-  
-)}/>
-)
+    getUser();
+  }, [token]);
+  // const pushUserClick = () => {
+
+  // };
+
+  // const PrivateRoutes = ({ component: Component, ...rest }) => (
+    
+  //   <Route
+  //     {...rest}
+  //     render={(props) =>
+
+  //      token!==null ?<Component {...props} />:  <Redirect to="/" /> 
+  //     }
+  //   />
+  // );
   return (
     <div className="App">
-      {token!=="" ? (
-        <nav className="wrapper">
-          <div className="dropdown">
-              {user.photo ? (
-            <button className="dropbtn">
+         {token!==null ? 
+       ( <nav className="wrapper">
+      
+            <div className="dropdown">
+              <button className="dropbtn">
                 <img className="photo" src={user.photo} />
                 {user.name}
-            </button>
-              ) : (
-                <button className="dropbtn">
-                <img
-                  className="photo"
-                  src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
-                  />
-                  {user.name}
-                   </button>
-              )}
-
-     
-            <div className="dropdown-content">
+              </button>
+             <div className="dropdown-content">
               <div className="icon">
                 <span className="material-icons"> account_circle </span>
-                <a className="routes" href="/">
+                <a className="routes" href={link}>
+                <link to={{
+      pathname: `/profile/${user._id}`,
+      state: { id: user._id, user: user }, // your data array of objects
+  }}/>
                   profile
                 </a>
               </div>
@@ -94,7 +103,8 @@ const PrivateRoutes=({component:Component,...rest})=>(
               </div>
             </div>
           </div>
-
+         
+        
           <img
             className="log_twit"
             src="https://help.twitter.com/content/dam/help-twitter/brand/logo.png"
@@ -118,24 +128,29 @@ const PrivateRoutes=({component:Component,...rest})=>(
               </li>
             </ul>
           </div>
-        </nav>
-      ) : (
-        <nav className="wrapper"></nav>
-      )}
+        </nav>)
+        :(  <div className="dropdown">
+        
+    </div>
+
+
+
+)
+    
+}
 
       <Provider store={store}>
         <BrowserRouter>
           <Switch>
+            <Route exact path="/edit" component={EditUser} />
+            <Route exact path="/home" component={Home} />
+            <Route exact path="/profile/:id" component={Profile} />
+            <Route exact path="/bookMarks" component={Bookmark} />
+            <Route exact path="/explore" component={Explore} />
             <Route exact path="/" component={Login} />
-            <PrivateRoutes exact path="/home" component={Home} />
-            <PrivateRoutes exact path="/profile/:id" component={Profile} />
-            <PrivateRoutes exact path="/bookMarks" component={Bookmark} />
-            <PrivateRoutes exact path="/explore" component={Explore} />
-            <PrivateRoutes exact path="/edit" component={EditUser} />
-
           </Switch>
         </BrowserRouter>
-      </Provider>
+      </Provider> 
     </div>
   );
 }

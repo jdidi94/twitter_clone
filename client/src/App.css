@@ -1,76 +1,60 @@
-.App{
-
+.App {
   background-image: linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%);
-font-family: 'Newsreader', serif;
-height: 100%;
-width: 100%;
-
+  font-family: "Newsreader", serif;
 }
-.body{
-  text-align: center;;
+.body {
+  text-align: center;
 }
-nav{
-  width:100%;
+nav {
+  width: 100%;
   /* margin: auto; */
   position: relative;
   text-align: center;
   height: 60px;
-  background:white;
-
+  background: white;
 }
-nav ul{
-  list-style: none
+nav ul {
+  list-style: none;
 }
 nav ul li {
-  display:inline-block;
-  padding:15px 0;
-  color:#00BFFF;  
-
-
+  display: inline-block;
+  padding: 15px 0;
+  color: #00bfff;
 }
 nav ul li .nav_routes {
-  text-decoration:none;
+  text-decoration: none;
   line-height: 30px;
   text-transform: uppercase;
-  padding:19px;
-  color:#00BFFF;
+  padding: 19px;
+  color: #00bfff;
   font-weight: bold;
-  font-family: 'Newsreader', serif;
-
-
+  font-family: "Newsreader", serif;
 }
- nav ul li .nav_routes:hover{
-  background-color:#1E90FF;
-  transition: .6s;
-  text-decoration:none;
-
+nav ul li .nav_routes:hover {
+  background-color: #1e90ff;
+  transition: 0.6s;
+  text-decoration: none;
 }
-.shadow{
+.shadow {
   position: relative;
-  box-shadow: 0 1px 4px rgba(0,0,0,0,0.3),0 0  40px rgba(0,0,0,0,0.1) ;
-  
-  
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0, 0.1);
 }
-.shadow:before
-.shadow:after{
-  content: '';
+.shadow:before .shadow:after {
+  content: "";
   position: absolute;
   z-index: 1;
-  box-shadow: 0 0 20px rgba(0,0,0,0,0.8 ) ;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0, 0.8);
   top: 50px;
   bottom: 0;
   left: 10px;
   right: 10px;
-  border-radius:100%;
-
-
+  border-radius: 100%;
 }
-.log_twit{
-  height:50px;
-  width:50px;
-  float:left;
+.log_twit {
+  height: 50px;
+  width: 50px;
+  float: left;
   margin: left 50px;
-
 }
 .dropbtn {
   color: black;
@@ -96,34 +80,28 @@ nav ul li .nav_routes {
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   border-radius: 20px;
- 
 }
 .dropdown-content .routes {
-
   text-decoration: none;
 
   opacity: 1;
 }
 .icon {
-  
   padding-bottom: 2px;
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
-  gap:10px;
-  color:grey;
+  gap: 10px;
+  color: grey;
   cursor: pointer;
 }
 .dropdown-content:hover {
-
   text-decoration: none;
   border-radius: 5px;
-
 }
-.icon:hover{
+.icon:hover {
   text-decoration: none;
-  background-color:black
-
+  background-color: black;
 }
 .dropdown:hover .dropdown-content {
   display: block;

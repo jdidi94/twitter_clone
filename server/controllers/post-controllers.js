@@ -138,14 +138,14 @@ exports.getAllPostsFollower = async function (req, res) {
   try {
     const user = await User.findOne({ _id: req.params.id });
 
-    const posts = await Post.find({ user: { $in: user.following } })
+    const populate = await Post.find({ user: { $in: user.following } })
       .sort({ createdAt: -1 })
       .populate("user")
       .populate("comments")
 
       .exec();
-
-    res.send(posts);
+          const posts = await Post.find({ user: { $in: user.following } })
+    res.send({posts:posts,populate:populate});
   } catch (err) {
     console.log(err);
   }

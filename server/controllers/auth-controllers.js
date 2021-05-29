@@ -66,12 +66,13 @@ exports.signUp= async function (req, res)  {
   }
 exports.getUserInfo=async function  (req, res)  {
   try{
+    const populate = await User.findOne(
+      {_id:req.params.id}
+    ).populate("followers").populate("following").exec();
     const user = await User.findOne(
       {_id:req.params.id}
-    );
-    res.send(user);
-
-
+    )
+    res.send({user:user,populate:populate})
   }catch (err) {
     console.log(err)
   }
@@ -147,7 +148,7 @@ exports.updateFollowing= async function  (req, res)  {
         { _id: req.params.id },
         { $pull: { following: req.body.following } }
       );
-      res.send(user);
+      res.send("you are not following this user");
     }
   }catch(err){
     console.error(err)
