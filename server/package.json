@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "socket":"nodemon socket.js"
+    "socket": "nodemon socket.js"
   },
   "author": "",
   "license": "ISC",
