@@ -25,8 +25,9 @@
 
   ### Installation
 
+
   1. Clone the repo
-     ```sh
+   ```sh
    git clone https://github.com/jdidi94/twitter_clone.git
    ```
 2. Install NPM packages in the client and the server folders:
