@@ -24,9 +24,8 @@
   ```
 
   ### Installation
-
-
-  1. Clone the repo
+  
+ 1. Clone the repo
    ```sh
    git clone https://github.com/jdidi94/twitter_clone.git
    ```
